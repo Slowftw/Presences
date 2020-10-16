@@ -966,10 +966,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.11.8.tgz#fe2012f2355e4ce08bca44aeb3abbb21cf88d33f"
   integrity sha512-KPcKqKm5UKDkaYPTuXSx8wEP7vE9GnuaXIZKijwRYcePpZFDVuy2a57LarFKiORbHOuTOOwYzxVxcUzsh2P2Pw==
 
-"@types/prettier@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.2.tgz#4929992f87a0129f4960a110faeb526210562e7b"
-  integrity sha512-IiPhNnenzkqdSdQH3ifk9LoX7oQe61ZlDdDO4+MUv6FyWdPGDPr26gCPVs3oguZEMq//nFZZpwUZcVuNJsG+DQ==
+"@types/prettier@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.4.tgz#0661c70bb83b246986a65300c17dc2fdc822c9cc"
+  integrity sha512-NuMuSx6nza/KwZvjEJ3sf6YRzEWJSDVUxFIqZ7x1OLdR9OG3KZjek5eh+e/VNH62zy+0J4wXRLvjXBPHRN6OOQ==
 
 "@types/semver@^7.3.4":
   version "7.3.4"
