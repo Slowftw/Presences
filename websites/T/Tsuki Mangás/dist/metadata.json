@@ -1,4 +1,5 @@
 {
+  "$schema": "https://schemas.premid.app/metadata/1.0",
   "author": {
     "name": "fror",
     "id": "515668127829458945"
@@ -15,61 +16,153 @@
     "pt_BR": "Tsuki Mangás é um leitor de mangás brasileiro; leia seus mangás favoritos no seu smartphone, tablet, computador ou qualquer outro dispositivo. Salve seus personagens favoritos e siga os últimos lançamentos."
   },
   "service": "Tsuki Mangás",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "logo": "https://menma.is-inside.me/V5Ay5LwN.png",
   "thumbnail": "https://menma.is-inside.me/48rF9MaF.png",
   "color": "#161616",
-  "tags": [
-    "manga",
-    "reading"
-  ],
+  "tags": ["manga", "mangá", "reading"],
+  "altnames": ["Tsuki Mangas"],
   "category": "anime",
   "settings": [
     {
-      "id": "showHistory",
-      "title": "[Global] Mostrar Histórico",
+      "id": "reader",
+      "title": "/leitor",
+      "icon": "fas fa-book-open",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_manga",
+      "title": "├─ Mangá",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_title",
+      "title": "├─ Título",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_chapter",
+      "title": "├─ Capítulo",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_page",
+      "title": "├─ Página",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_comment",
+      "title": "├─ Comentário",
+      "value": true
+    },
+    {
+      "if": {
+        "reader": true
+      },
+      "id": "r_report",
+      "title": "└─ Report",
+      "value": true
+    },
+    {
+      "id": "manga",
+      "title": "/manga",
+      "icon": "fas fa-book-reader",
+      "value": true
+    },
+    {
+      "if": {
+        "manga": true
+      },
+      "id": "m_name",
+      "title": "├─ Nome",
+      "value": true
+    },
+    {
+      "if": {
+        "manga": true
+      },
+      "id": "m_tab",
+      "title": "├─ Tab/Aba",
+      "value": true
+    },
+    {
+      "if": {
+        "manga": true
+      },
+      "id": "m_gender",
+      "title": "└─ Gêneros",
+      "value": true
+    },
+    {
+      "id": "profile",
+      "title": "/perfil",
+      "icon": "fas fa-user-circle",
+      "value": true
+    },
+    {
+      "if": {
+        "profile": true
+      },
+      "id": "p_username",
+      "title": "├─ Username",
+      "value": true
+    },
+
+    {
+      "if": {
+        "profile": true
+      },
+      "id": "p_editing",
+      "title": "├─ Editando",
+      "value": true
+    },
+    {
+      "if": {
+        "profile": true
+      },
+      "id": "p_tab",
+      "title": "└─ Tab/Aba",
+      "value": true
+    },
+    {
+      "id": "history",
+      "title": "Histórico",
       "icon": "fas fa-history",
       "value": true
     },
     {
-      "id": "showUserName",
-      "title": "[Global] Mostrar Username",
-      "icon": "fas fa-eye",
+      "id": "search",
+      "title": "Pesquisa",
+      "icon": "fas fa-search",
       "value": true
     },
     {
-      "id": "showComment",
-      "title": "[/leitor] Mostrar Comentário",
-      "icon": "fas fa-comment",
+      "id": "darkimg",
+      "title": "Dark Imgs",
+      "icon": "fas fa-cat",
       "value": true
-    },
-    {
-      "id": "showReport",
-      "title": "[/leitor] Mostrar Report",
-      "icon": "fas fa-exclamation-triangle",
-      "value": true
-    },
-    {
-      "id": "resetTimestamp",
-      "title": "[Global] Reiniciar Timestamp",
-      "icon": "fas fa-hourglass",
-      "value": false
-    },
-    {
-      "id": "darkResource",
-      "title": "[Global] Dark Resources",
-      "icon": "fas fa-coffee",
-      "value": false
     },
     {
       "id": "logo",
-      "title": "[Global] Logo",
-      "icon": "fas fa-bookmark",
+      "title": "Logo",
+      "icon": "fas fa-cloud-moon",
       "value": 0,
-      "values": [
-        "Nuvem",
-        "Livro"
-      ]
+      "values": ["Livro", "Nuvem"]
     }
   ]
 }

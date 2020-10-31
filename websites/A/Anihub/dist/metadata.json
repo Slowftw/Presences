@@ -1,4 +1,5 @@
 {
+  "$schema": "https://schemas.premid.app/metadata/1.0",
   "author": {
     "name": "Slowftw",
     "id": "325046217904226306"
@@ -14,15 +15,11 @@
     "nl": "Anihub is een braziliaanse website die een plek bied om gratis anime te bekijken, zowel online als offline en zonder misbruik van advertenties."
   },
   "url": "anihub.tv",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "logo": "https://i.imgur.com/HClem6o.png",
   "thumbnail": "https://i.imgur.com/ehkk7qZ.png",
   "color": "#1997C6",
-  "tags": [
-    "video",
-    "media",
-    "anime"
-  ],
+  "tags": ["video", "media", "anime"],
   "category": "anime",
   "settings": [
     {
@@ -33,198 +30,198 @@
       "placeholder": "Exemplo: '/caminho' | '' para desativar todos"
     },
     {
-      "id": "showVideos",
+      "id": "videos",
       "title": "/videos",
       "icon": "fas fa-play",
       "value": true
     },
     {
       "if": {
-        "showVideos": true
+        "videos": true
       },
-      "id": "showVideosName",
+      "id": "v_name",
       "title": "├─ Nome",
       "value": true
     },
     {
       "if": {
-        "showVideos": true
+        "videos": true
       },
-      "id": "showVideosEpisode",
+      "id": "v_episode",
       "title": "├─ Episódio",
       "value": true
     },
     {
       "if": {
-        "showVideos": true
+        "videos": true
       },
-      "id": "showVideosLTime",
+      "id": "v_lefttime",
       "title": "├─ Tempo Restante",
       "value": true
     },
     {
       "if": {
-        "showVideos": true
+        "videos": true
       },
-      "id": "showVideosComment",
+      "id": "v_comment",
       "title": "├─ Comentário",
       "value": true
     },
     {
       "if": {
-        "showVideos": true
+        "videos": true
       },
-      "id": "showVidoesReport",
+      "id": "v_report",
       "title": "└─ Report",
       "value": true
     },
     {
-      "id": "showAnime",
+      "id": "anime",
       "title": "/anime",
       "icon": "fas fa-bookmark",
       "value": true
     },
     {
       "if": {
-        "showAnime": true
+        "anime": true
       },
-      "id": "showAnimeName",
+      "id": "a_name",
       "title": "├─ Nome",
       "value": true
     },
     {
       "if": {
-        "showAnime": true
+        "anime": true
       },
-      "id": "showAnimeReview",
+      "id": "a_review",
       "title": "├─ Resenha",
       "value": true
     },
     {
       "if": {
-        "showAnime": true
+        "anime": true
       },
-      "id": "showAnimeTrailer",
+      "id": "a_trailer",
       "title": "├─ Trailer",
       "value": true
     },
     {
       "if": {
-        "showAnime": true
+        "anime": true
       },
-      "id": "showAnimeSelection",
+      "id": "a_selection",
       "title": "└─ Seleção",
       "value": true
     },
     {
-      "id": "showForum",
+      "id": "forum",
       "title": "/forum",
       "icon": "fas fa-book",
       "value": true
     },
     {
       "if": {
-        "showForum": true
+        "forum": true
       },
-      "id": "showForumTitle",
+      "id": "f_title",
       "title": "├─ Thread Título",
       "value": true
     },
     {
       "if": {
-        "showForum": true
+        "forum": true
       },
-      "id": "showForumCategory",
+      "id": "f_category",
       "title": "├─ Categoria",
       "value": true
     },
     {
       "if": {
-        "showForum": true
+        "forum": true
       },
-      "id": "showForumNewTopic",
+      "id": "f_newtopic",
       "title": "├─ Novo Tópico",
       "value": true
     },
     {
       "if": {
-        "showForum": true
+        "forum": true
       },
-      "id": "showForumReply",
+      "id": "f_reply",
       "title": "└─ Resposta",
       "value": true
     },
     {
-      "id": "showProfile",
+      "id": "profile",
       "title": "/perfil",
       "icon": "fas fa-user-circle",
       "value": true
     },
     {
       "if": {
-        "showProfile": true
+        "profile": true
       },
-      "id": "showProfileUsername",
+      "id": "p_username",
       "title": "├─ Username",
       "value": true
     },
     {
       "if": {
-        "showProfile": true
+        "profile": true
       },
-      "id": "showProfileSelection",
+      "id": "p_selection",
       "title": "└─ Seleção",
       "value": true
     },
     {
-      "id": "showSocial",
+      "id": "social",
       "title": "/postagens",
       "icon": "fas fa-comment",
       "value": true
     },
     {
       "if": {
-        "showSocial": true
+        "social": true
       },
-      "id": "showSocialTitle",
+      "id": "s_title",
       "title": "└─ Título",
       "value": true
     },
     {
-      "id": "showRoom",
+      "id": "room",
       "title": "/sala",
       "icon": "fas fa-users",
       "value": true
     },
     {
       "if": {
-        "showRoom": true
+        "room": true
       },
-      "id": "showRoomEpisode",
+      "id": "r_episode",
       "title": "├─ Episódio",
       "value": true
     },
     {
       "if": {
-        "showRoom": true
+        "room": true
       },
-      "id": "showRoomName",
+      "id": "r_name",
       "title": "├─ Nome",
       "value": true
     },
     {
       "if": {
-        "showRoom": true
+        "room": true
       },
-      "id": "showRoomUsers",
+      "id": "r_users",
       "title": "├─ Usuários",
       "value": true
     },
     {
       "if": {
-        "showRoom": true
+        "room": true
       },
-      "id": "showRoomLTime",
+      "id": "r_lefttime",
       "title": "└─ Tempo Restante",
       "value": true
     }
