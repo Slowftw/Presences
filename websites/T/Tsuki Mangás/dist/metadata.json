@@ -10,139 +10,174 @@
       "id": "325046217904226306"
     }
   ],
-  "url": "tsukimangas.com",
+  "service": "Tsuki Mangás",
+  "altnames": ["Tsuki Mangas"],
   "description": {
     "en": "Tsuki Mangás is an brazilian manga reader; read your favorite mangas in your smartphone, tablet, computer or any other device. Save your favorite characters and follow the latest releases.",
     "pt_BR": "Tsuki Mangás é um leitor de mangás brasileiro; leia seus mangás favoritos no seu smartphone, tablet, computador ou qualquer outro dispositivo. Salve seus personagens favoritos e siga os últimos lançamentos."
   },
-  "service": "Tsuki Mangás",
+  "url": "tsukimangas.com",
   "version": "2.0.0",
-  "logo": "https://menma.is-inside.me/V5Ay5LwN.png",
-  "thumbnail": "https://menma.is-inside.me/48rF9MaF.png",
+  "logo": "https://tsuki.is-inside.me/DtWDS8xf.png",
+  "thumbnail": "https://tsuki.is-inside.me/TTPtAsO8.png",
   "color": "#161616",
   "tags": ["manga", "mangá", "reading"],
-  "altnames": ["Tsuki Mangas"],
   "category": "anime",
   "settings": [
     {
+      "id": "home",
+      "title": "Início",
+      "icon": "fas fa-home",
+      "value": true
+    },
+    {
+      "if": { "home": true },
+      "id": "releases",
+      "title": "└─ Lançamentos",
+      "value": true
+    },
+    {
+      "id": "mangalist",
+      "title": "Lista de Mangás",
+      "icon": "fas fa-book-reader",
+      "value": true
+    },
+    {
+      "if": { "mangalist": true },
+      "id": "ml_gender",
+      "title": "├─ Gêneros",
+      "value": true
+    },
+    {
+      "if": { "mangalist": true },
+      "id": "ml_pagi",
+      "title": "└─ Paginação",
+      "value": true
+    },
+    {
       "id": "reader",
-      "title": "/leitor",
+      "title": "Leitor",
       "icon": "fas fa-book-open",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
-      "id": "r_manga",
-      "title": "├─ Mangá",
+      "if": { "reader": true },
+      "id": "r_name",
+      "title": "├─ Nome",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
+      "if": { "reader": true },
       "id": "r_title",
       "title": "├─ Título",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
+      "if": { "reader": true },
       "id": "r_chapter",
       "title": "├─ Capítulo",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
+      "if": { "reader": true },
       "id": "r_page",
       "title": "├─ Página",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
+      "if": { "reader": true },
+      "id": "r_report",
+      "title": "├─ Reporte",
+      "value": true
+    },
+    {
+      "if": { "reader": true },
       "id": "r_comment",
       "title": "├─ Comentário",
       "value": true
     },
     {
-      "if": {
-        "reader": true
-      },
-      "id": "r_report",
-      "title": "└─ Report",
+      "if": { "reader": true },
+      "id": "r_reply",
+      "title": "├─ Resposta",
+      "value": true
+    },
+    {
+      "if": { "reader": true },
+      "id": "r_reply_user",
+      "title": "└─ Resposta User",
       "value": true
     },
     {
       "id": "manga",
-      "title": "/manga",
-      "icon": "fas fa-book-reader",
+      "title": "Mangá",
+      "icon": "fas fa-address-book",
       "value": true
     },
     {
-      "if": {
-        "manga": true
-      },
+      "if": { "manga": true },
       "id": "m_name",
       "title": "├─ Nome",
       "value": true
     },
     {
-      "if": {
-        "manga": true
-      },
+      "if": { "manga": true },
       "id": "m_tab",
       "title": "├─ Tab/Aba",
       "value": true
     },
     {
-      "if": {
-        "manga": true
-      },
+      "if": { "manga": true },
       "id": "m_gender",
-      "title": "└─ Gêneros",
+      "title": "├─ Gêneros",
+      "value": true
+    },
+    {
+      "if": { "manga": true },
+      "id": "m_pagi",
+      "title": "└─ Paginação",
       "value": true
     },
     {
       "id": "profile",
-      "title": "/perfil",
+      "title": "Perfil",
       "icon": "fas fa-user-circle",
       "value": true
     },
     {
-      "if": {
-        "profile": true
-      },
-      "id": "p_username",
-      "title": "├─ Username",
+      "if": { "profile": true },
+      "id": "p_username_and_tab",
+      "title": "├─ Username & Tab/Aba",
       "value": true
     },
-
     {
-      "if": {
-        "profile": true
-      },
+      "if": { "profile": true },
       "id": "p_editing",
-      "title": "├─ Editando",
+      "title": "└─ Editando",
       "value": true
     },
     {
-      "if": {
-        "profile": true
-      },
-      "id": "p_tab",
-      "title": "└─ Tab/Aba",
+      "id": "group_scan",
+      "title": "Grupo/Scan",
+      "icon": "fas fa-users-cog",
       "value": true
     },
     {
-      "id": "history",
-      "title": "Histórico",
-      "icon": "fas fa-history",
+      "if": { "group_scan": true },
+      "id": "gs_name",
+      "title": "├─ Nome",
+      "value": true
+    },
+    {
+      "if": { "group_scan": true },
+      "id": "gs_members",
+      "title": "├─ Membros (Nº)",
+      "value": true
+    },
+    {
+      "if": { "group_scan": true },
+      "id": "gs_pagi",
+      "title": "└─ Paginação",
       "value": true
     },
     {
@@ -152,17 +187,47 @@
       "value": true
     },
     {
-      "id": "darkimg",
-      "title": "Dark Imgs",
-      "icon": "fas fa-cat",
+      "if": { "search": true },
+      "id": "s_input",
+      "title": "└─ Texto/Entrada",
       "value": true
     },
     {
-      "id": "logo",
-      "title": "Logo",
-      "icon": "fas fa-cloud-moon",
+      "id": "history",
+      "title": "Histórico",
+      "icon": "fas fa-history",
+      "value": true
+    },
+    {
+      "id": "notify",
+      "title": "Notificação",
+      "icon": "fas fa-bell",
+      "value": true
+    },
+    {
+      "id": "darkbackground",
+      "title": "Dark Background",
+      "icon": "fas fa-cat",
+      "value": false
+    },
+    {
+      "id": "custom_",
+      "title": "Custom",
+      "icon": "fas fa-code",
+      "value": false
+    },
+    {
+      "if": { "custom_": true },
+      "id": "custom",
+      "value": "\"/404\":[\"404\",\"error\",\"!hatsune_miku\",\"\u200C☾\",\"logo\"],\"/scan/?$\":[\"🦍\"]",
+      "placeholder": "\"regex\": [\">1\", \">1\", \"SKey\", \"SText>1\",\"LKey\"]"
+    },
+    {
+      "id": "timestamp",
+      "title": "Timestamp",
+      "icon": "fas fa-clock",
       "value": 0,
-      "values": ["Livro", "Nuvem"]
+      "values": ["Constante", "Inconstante", "Nenhum"]
     }
   ]
 }
