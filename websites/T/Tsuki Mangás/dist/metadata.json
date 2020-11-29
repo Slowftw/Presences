@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schemas.premid.app/metadata/1.0",
+  "$schema": "https://schemas.premid.app/metadata/1.2",
   "author": {
     "name": "fror",
     "id": "515668127829458945"
@@ -21,7 +21,7 @@
   "logo": "https://tsuki.is-inside.me/DtWDS8xf.png",
   "thumbnail": "https://tsuki.is-inside.me/TTPtAsO8.png",
   "color": "#161616",
-  "tags": ["manga", "mangá", "reading"],
+  "tags": ["manga", "mangá", "reading", "leitura", "tsuki"],
   "category": "anime",
   "settings": [
     {
@@ -33,8 +33,13 @@
     {
       "if": { "home": true },
       "id": "releases",
-      "title": "└─ Lançamentos",
+      "title": "Lançamentos",
       "value": true
+    },
+    {
+      "if": { "home": true },
+      "id": "h_str",
+      "value": "aa"
     },
     {
       "id": "mangalist",
@@ -45,14 +50,19 @@
     {
       "if": { "mangalist": true },
       "id": "ml_gender",
-      "title": "├─ Gêneros",
+      "title": "Gêneros",
       "value": true
     },
     {
       "if": { "mangalist": true },
       "id": "ml_pagi",
-      "title": "└─ Paginação",
+      "title": "Paginação",
       "value": true
+    },
+    {
+      "if": { "mangalist": true },
+      "id": "ml_str",
+      "value": "aa"
     },
     {
       "id": "reader",
@@ -63,50 +73,55 @@
     {
       "if": { "reader": true },
       "id": "r_name",
-      "title": "├─ Nome",
+      "title": "Nome",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_title",
-      "title": "├─ Título",
+      "title": "Título",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_chapter",
-      "title": "├─ Capítulo",
+      "title": "Capítulo",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_page",
-      "title": "├─ Página",
+      "title": "Página",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_report",
-      "title": "├─ Reporte",
+      "title": "Reporte",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_comment",
-      "title": "├─ Comentário",
+      "title": "Comentário",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_reply",
-      "title": "├─ Resposta",
+      "title": "Resposta",
       "value": true
     },
     {
       "if": { "reader": true },
       "id": "r_reply_user",
-      "title": "└─ Resposta User",
+      "title": "Respondendo User",
       "value": true
+    },
+    {
+      "if": { "reader": true },
+      "id": "r_str",
+      "value": "aa"
     },
     {
       "id": "manga",
@@ -117,26 +132,31 @@
     {
       "if": { "manga": true },
       "id": "m_name",
-      "title": "├─ Nome",
+      "title": "Nome",
       "value": true
     },
     {
       "if": { "manga": true },
       "id": "m_tab",
-      "title": "├─ Tab/Aba",
+      "title": "Tab/Aba",
       "value": true
     },
     {
       "if": { "manga": true },
       "id": "m_gender",
-      "title": "├─ Gêneros",
+      "title": "Gêneros",
       "value": true
     },
     {
       "if": { "manga": true },
       "id": "m_pagi",
-      "title": "└─ Paginação",
+      "title": "Paginação",
       "value": true
+    },
+    {
+      "if": { "manga": true },
+      "id": "m_str",
+      "value": "aa"
     },
     {
       "id": "profile",
@@ -147,14 +167,19 @@
     {
       "if": { "profile": true },
       "id": "p_username_and_tab",
-      "title": "├─ Username & Tab/Aba",
+      "title": "Username & Tab/Aba",
       "value": true
     },
     {
       "if": { "profile": true },
       "id": "p_editing",
-      "title": "└─ Editando",
+      "title": "Editando",
       "value": true
+    },
+    {
+      "if": { "profile": true },
+      "id": "p_str",
+      "value": "aa"
     },
     {
       "id": "group_scan",
@@ -165,20 +190,25 @@
     {
       "if": { "group_scan": true },
       "id": "gs_name",
-      "title": "├─ Nome",
+      "title": "Nome",
       "value": true
     },
     {
       "if": { "group_scan": true },
       "id": "gs_members",
-      "title": "├─ Membros (Nº)",
+      "title": "Membros (Nº)",
       "value": true
     },
     {
       "if": { "group_scan": true },
       "id": "gs_pagi",
-      "title": "└─ Paginação",
+      "title": "Paginação",
       "value": true
+    },
+    {
+      "if": { "group_scan": true },
+      "id": "gs_str",
+      "value": "aa"
     },
     {
       "id": "search",
@@ -189,8 +219,13 @@
     {
       "if": { "search": true },
       "id": "s_input",
-      "title": "└─ Texto/Entrada",
+      "title": "Texto/Entrada",
       "value": true
+    },
+    {
+      "if": { "search": true },
+      "id": "s_str",
+      "value": "aa"
     },
     {
       "id": "history",
@@ -199,10 +234,20 @@
       "value": true
     },
     {
+      "if": { "history": true },
+      "id": "hi_str",
+      "value": "aa"
+    },
+    {
       "id": "notify",
       "title": "Notificação",
       "icon": "fas fa-bell",
       "value": true
+    },
+    {
+      "if": { "notify": true },
+      "id": "no_str",
+      "value": "aa"
     },
     {
       "id": "darkbackground",

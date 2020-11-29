@@ -5,12 +5,14 @@ const presence = new Presence({
   SettingsId = {
     home: {
       this: "home",
-      releases: "releases"
+      releases: "releases",
+      str: "h_str"
     },
     mangalist: {
       this: "mangalist",
       gender: "ml_gender",
-      pagination: "ml_pagi"
+      pagination: "ml_pagi",
+      str: "ml_str"
     },
     reader: {
       this: "reader",
@@ -21,38 +23,49 @@ const presence = new Presence({
       report: "r_report",
       comment: "r_comment",
       reply: "r_reply",
-      reply_user: "r_reply_user"
+      reply_user: "r_reply_user",
+      str: "r_str"
     },
     manga: {
       this: "manga",
       name: "m_name",
       tab: "m_tab",
       gender: "m_gender",
-      pagination: "m_pagi"
+      pagination: "m_pagi",
+      str: "m_str"
     },
     profile: {
       this: "profile",
       username_and_tab: "p_username_and_tab",
-      editing: "p_editing"
+      editing: "p_editing",
+      str: "p_str"
     },
     group_scan: {
       this: "group_scan",
       name: "gs_name",
       members: "gs_members",
-      pagination: "gs_pagi"
+      pagination: "gs_pagi",
+      str: "gs_str"
     },
     search: {
       this: "search",
-      input: "s_input"
+      input: "s_input",
+      str: "s_str"
     },
-    history: "history",
-    notify: "notify",
+    history: {
+      this: "history",
+      str: "hi_str"
+    },
+    notify: {
+      this: "notify",
+      str: "no_str"
+    },
     dark: "darkbackground",
     custom_: "custom_",
     custom: "custom",
     timestamp: "timestamp"
   },
-  imgNames = [
+  imgKeys = [
     "logo",
     "reading",
     "search",
@@ -65,7 +78,7 @@ const presence = new Presence({
 async function Resource(ResourceSelected: string): Promise<string> {
   let value = ResourceSelected;
   if (value.match(/^!/)) return value.replace(/^!/, "");
-  if (imgNames.indexOf(value) < 0) return "";
+  if (imgKeys.indexOf(value) < 0) return "";
   if (await presence.getSetting(SettingsId.dark)) value += "_dark";
   return value.toLowerCase();
 }
@@ -114,7 +127,7 @@ presence.on("UpdateData", async () => {
     notfound = pathName == "/404" || document.querySelector(".notfound"),
     timestampValue = await presence.getSetting(SettingsId.timestamp),
     data: PresenceData = {
-      largeImageKey: await Resource(imgNames[0]),
+      largeImageKey: await Resource(imgKeys[0]),
       startTimestamp:
         timestampValue == 0
           ? browsingStamp
@@ -133,18 +146,21 @@ presence.on("UpdateData", async () => {
     (await presence.getSetting(SettingsId.mangalist.this)) &&
     !notfound
   ) {
+    const genders: string[] = [],
+      gendersEnabled = await presence.getSetting(SettingsId.mangalist.gender),
+      pagiEnabled = await presence.getSetting(SettingsId.mangalist.pagination);
     data.details = "Lista de Mangás";
-    if (await presence.getSetting(SettingsId.mangalist.pagination))
+    if (pagiEnabled)
       data.details += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
-    if (await presence.getSetting(SettingsId.mangalist.gender)) {
-      let Generos = "";
+    if (gendersEnabled) {
       document
         .querySelector("div.multiselect>div>div")
         ?.childNodes.forEach((item) => {
-          if (Generos) Generos += ", ";
-          Generos += item.textContent.trim();
+          genders.push(item.textContent.trim());
         });
-      data.state = `Gêneros: ${!Generos ? "Todos" : Generos}`;
+      data.state = genders.length > 2 ? "" : "Gêneros: ";
+      if (genders.length == 0) data.state += "Todos";
+      data.state += genders.join(", ");
     }
   } else if (
     pathName.startsWith("/perfil/") &&
@@ -226,10 +242,10 @@ presence.on("UpdateData", async () => {
       gendersQuery.forEach((item) => {
         genders.push(item.textContent.trim());
       });
-      data.state = genders.length > 2 ? "" : "Gênero(s): ";
+      data.state = genders.length > 2 ? "" : "Gêneros: ";
       data.state += genders.join(", ");
     }
-    data.smallImageKey = await Resource(imgNames[2]);
+    data.smallImageKey = await Resource(imgKeys[2]);
     data.smallImageText = "";
     if (tabEnabled)
       data.smallImageText =
@@ -270,7 +286,7 @@ presence.on("UpdateData", async () => {
         : "..."
       : "Lendo Mangá:";
     data.state = "";
-    data.smallImageKey = await Resource(imgNames[1]);
+    data.smallImageKey = await Resource(imgKeys[1]);
     if (titleEnabled && chapter && chapter.querySelector("span"))
       data.smallImageText = `"${chapter
         .querySelector("span")
@@ -314,21 +330,21 @@ presence.on("UpdateData", async () => {
         .toLowerCase()
         .startsWith("report")
     ) {
-      data.smallImageKey = await Resource(imgNames[5]);
+      data.smallImageKey = await Resource(imgKeys[5]);
       data.smallImageText = "Reportando capítulo...";
     } else if (
       commentEnabled &&
       document.activeElement.nodeName == "TEXTAREA" &&
       document.activeElement.parentElement.parentElement.className == "comentll"
     ) {
-      data.smallImageKey = await Resource(imgNames[3]);
+      data.smallImageKey = await Resource(imgKeys[3]);
       data.smallImageText = "Comentando...";
     } else if (
       replyEnabled &&
       document.activeElement.nodeName == "INPUT" &&
       document.activeElement.parentElement.parentElement.className == "kkl"
     ) {
-      data.smallImageKey = await Resource(imgNames[7]);
+      data.smallImageKey = await Resource(imgKeys[7]);
       data.smallImageText = `Respondendo ${
         replyUEnabled
           ? document.activeElement.parentElement.parentElement.querySelector(
@@ -362,43 +378,7 @@ presence.on("UpdateData", async () => {
       data.details = data.details.replace("Pág.", "Página");
     if (!data.state) data.details = data.details.replace(/:$/, "");
   }
-  if (
-    (await presence.getSetting(SettingsId.history)) &&
-    parseInt(
-      document.querySelector("[class$=historicob]")?.parentElement.style.width
-    ) > 0
-  ) {
-    const hCategory = document
-      .getElementsByClassName("activmancap")[0]
-      ?.textContent.trim();
-    let hSession = "...";
-    document.querySelectorAll("div.selecths").forEach((item) => {
-      if (item.classList[item.classList.length - 1].includes("selecths"))
-        hSession = `${item.childNodes[0].textContent} ${item.childNodes[1].textContent}`;
-    });
-    data.details = "Visualizando Histórico:";
-    data.state = `${
-      hCategory
-        ? `${hCategory.match(/\d+/g)[0]} ${hCategory.replace(/ \d+/g, "")}`
-        : "..."
-    } - ${hSession}`;
-    data.smallImageKey = await Resource(imgNames[4]);
-    data.smallImageText = `Pág. ${await getPagination(
-      0,
-      true
-    )[0]}/${await getPagination(0, true)[1]}`;
-  } else if (
-    (await presence.getSetting(SettingsId.notify)) &&
-    parseInt(
-      document.querySelector(`[class$="historicob 22"]`)?.parentElement.style
-        .width
-    ) > 0
-  ) {
-    data.details = "Visualizando Notificações";
-    data.smallImageKey = await Resource(imgNames[6]);
-    delete data.state;
-    delete data.smallImageText;
-  } else if (await presence.getSetting(SettingsId.search.this)) {
+  if (await presence.getSetting(SettingsId.search.this)) {
     const searchElement = "#menu>li>input";
     if (
       (document.querySelector(searchElement) &&
@@ -418,9 +398,44 @@ presence.on("UpdateData", async () => {
         data.details = "Pesquisando...";
         delete data.state;
       }
-      data.smallImageKey = await Resource(imgNames[2]);
+      data.smallImageKey = await Resource(imgKeys[2]);
       delete data.smallImageText;
     }
+  } else if (
+    (await presence.getSetting(SettingsId.history.this)) &&
+    parseInt(
+      document.querySelector("[class$=historicob]")?.parentElement.style.width
+    ) > 0
+  ) {
+    const hCategory = document
+      .getElementsByClassName("activmancap")[0]
+      ?.textContent.trim();
+    let hSession = "...";
+    document.querySelectorAll("div.selecths").forEach((item) => {
+      if (item.classList[item.classList.length - 1].includes("selecths"))
+        hSession = `${item.childNodes[0].textContent} ${item.childNodes[1].textContent}`;
+    });
+    data.details = "Visualizando Histórico:";
+    data.state = `${
+      hCategory
+        ? `${hCategory.match(/\d+/g)[0]} ${hCategory.replace(/ \d+/g, "")}`
+        : "..."
+    } - ${hSession}`;
+    data.smallImageKey = await Resource(imgKeys[4]);
+    data.smallImageText = `Pág. ${getPagination(0, true)[0]}/${
+      getPagination(0, true)[1]
+    }`;
+  } else if (
+    (await presence.getSetting(SettingsId.notify.this)) &&
+    parseInt(
+      document.querySelector(`[class$="historicob 22"]`)?.parentElement.style
+        .width
+    ) > 0
+  ) {
+    data.details = "Visualizando Notificações";
+    data.smallImageKey = await Resource(imgKeys[6]);
+    delete data.state;
+    delete data.smallImageText;
   }
   if (await presence.getSetting(SettingsId.custom_)) {
     if (isValidJSON(`{${await presence.getSetting(SettingsId.custom)}}`)) {
@@ -458,12 +473,13 @@ presence.on("UpdateData", async () => {
       }
     }
   }
-  if (!data.state) delete data.state;
   if (!data.details) delete data.details;
+  if (!data.state) delete data.state;
   if (!data.startTimestamp) delete data.startTimestamp;
   if (!data.smallImageKey) delete data.smallImageKey;
   if (!data.smallImageText) delete data.smallImageText;
-  if (!data.largeImageKey) data.largeImageKey = await Resource(imgNames[0]);
+  if (!data.largeImageKey)
+    data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
   /*
   console.log(
     `State: "${data.state}"\nDetails: "${data.details}"\ntimestamp: ${data.startTimestamp}\nsmallKey: ${data.smallImageKey}\nsmallText: "${data.smallImageText}"`
