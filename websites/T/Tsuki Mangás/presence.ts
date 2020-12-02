@@ -2,68 +2,92 @@ const presence = new Presence({
     clientId: "777623145301016596"
   }),
   browsingStamp = Math.floor(Date.now() / 1000),
-  SettingsId = {
-    home: {
-      this: "home",
-      releases: "releases",
-      str: "h_str"
+  settings = {
+    id: {
+      home: {
+        this: "home",
+        releases: "releases",
+        str: "h_str"
+      },
+      mangalist: {
+        this: "mangalist",
+        gender: "ml_gender",
+        pagination: "ml_pagi",
+        str: "ml_str"
+      },
+      reader: {
+        this: "reader",
+        name: "r_name",
+        title: "r_title",
+        chapter: "r_chapter",
+        page: "r_page",
+        report: "r_report",
+        comment: "r_comment",
+        reply: "r_reply",
+        reply_user: "r_reply_user",
+        str: "r_str"
+      },
+      manga: {
+        this: "manga",
+        name: "m_name",
+        tab: "m_tab",
+        gender: "m_gender",
+        pagination: "m_pagi",
+        str: "m_str"
+      },
+      profile: {
+        this: "profile",
+        username_and_tab: "p_username_and_tab",
+        editing: "p_editing",
+        str: "p_str"
+      },
+      group_scan: {
+        this: "group_scan",
+        name: "gs_name",
+        members: "gs_members",
+        pagination: "gs_pagi",
+        str: "gs_str"
+      },
+      search: {
+        this: "search",
+        input: "s_input",
+        str: "s_str"
+      },
+      history: {
+        this: "history",
+        str: "hi_str"
+      },
+      notify: {
+        this: "notify",
+        str: "no_str"
+      },
+      dark: "darkbackground",
+      custom_: "custom_",
+      custom: "custom",
+      timestamp: "timestamp"
     },
-    mangalist: {
-      this: "mangalist",
-      gender: "ml_gender",
-      pagination: "ml_pagi",
-      str: "ml_str"
-    },
-    reader: {
-      this: "reader",
-      name: "r_name",
-      title: "r_title",
-      chapter: "r_chapter",
-      page: "r_page",
-      report: "r_report",
-      comment: "r_comment",
-      reply: "r_reply",
-      reply_user: "r_reply_user",
-      str: "r_str"
-    },
-    manga: {
-      this: "manga",
-      name: "m_name",
-      tab: "m_tab",
-      gender: "m_gender",
-      pagination: "m_pagi",
-      str: "m_str"
-    },
-    profile: {
-      this: "profile",
-      username_and_tab: "p_username_and_tab",
-      editing: "p_editing",
-      str: "p_str"
-    },
-    group_scan: {
-      this: "group_scan",
-      name: "gs_name",
-      members: "gs_members",
-      pagination: "gs_pagi",
-      str: "gs_str"
-    },
-    search: {
-      this: "search",
-      input: "s_input",
-      str: "s_str"
-    },
-    history: {
-      this: "history",
-      str: "hi_str"
-    },
-    notify: {
-      this: "notify",
-      str: "no_str"
-    },
-    dark: "darkbackground",
-    custom_: "custom_",
-    custom: "custom",
-    timestamp: "timestamp"
+    ph: {
+      h_lancamento: function (s: string) {
+        const query = document.querySelector("[class*=activedlanca]");
+        return s.split("%h_l%").join(query ? query.textContent : "%ph_bruh%");
+      },
+      pagination: function (s: string) {
+        return s
+          .split("%pagi0%")
+          .join(getPagination(0)[0].toString())
+          .split("%pagi1%")
+          .join(getPagination(0)[1].toString())
+          .split("%pagi0_%")
+          .join(getPagination(0, true)[0].toString())
+          .split("%pagi1_%")
+          .join(getPagination(0, true)[1].toString());
+      },
+      url_search: function (s: string) {
+        return s
+          .split("%url_s%")
+          .join(decodeURIComponent(window.location.search.slice(1)));
+      }
+    }
   },
   imgKeys = [
     "logo",
@@ -77,9 +101,9 @@ const presence = new Presence({
   ];
 async function Resource(ResourceSelected: string): Promise<string> {
   let value = ResourceSelected;
-  if (value.match(/^!/)) return value.replace(/^!/, "");
+  if (value.startsWith("!")) return value.slice(1);
   if (imgKeys.indexOf(value) < 0) return "";
-  if (await presence.getSetting(SettingsId.dark)) value += "_dark";
+  if (await presence.getSetting(settings.id.dark)) value += "_dark";
   return value.toLowerCase();
 }
 function getPagination(ind: number, history?: boolean): number[] {
@@ -102,10 +126,39 @@ function getPagination(ind: number, history?: boolean): number[] {
   }
   return [current, max];
 }
-function placeholder(input: string): string {
-  return input.split("%s%").join(decodeURIComponent(location.search.slice(1)));
+function getUser(myUser?: boolean): string {
+  const title_regex = document.title.match(/(?<=Perfil: )(.*)(?= -)/g),
+    query = document.querySelector("ul.drop_menu>a"),
+    dom = document.querySelector("#capapl > b")?.textContent,
+    pathname = /\/perfil\/(\w+)\/{0,}/g.exec(location.pathname);
+  if (myUser)
+    return query?.hasAttribute("href")
+      ? query.getAttribute("href").split("/").slice(-1)[0]
+      : "%ph_bruh%";
+  return dom
+    ? dom
+    : title_regex
+    ? title_regex[0]
+    : pathname
+    ? pathname[1]
+    : "%ph_bruh%";
 }
-function p_getStatistics(query: string): string {
+async function getStrings(id: string): Promise<string[]> {
+  let arr: string[] = [];
+  try {
+    arr = eval(`[${await presence.getSetting(id)}]`);
+    arr = arr.filter((i: string) => typeof i === "string");
+  } catch {
+    return [];
+  }
+  return arr;
+}
+function getAllPH(input: string): string {
+  for (const item in settings.ph)
+    input = (settings.ph as Record<string, (s: string) => string>)[item](input);
+  return input;
+}
+function getStats(query: string): string {
   return (document.querySelector(query) as HTMLElement)?.dataset.tooltip;
 }
 function getWoMaterialIcons(query: string) {
@@ -123,9 +176,9 @@ function isValidJSON(text: string): boolean {
   }
 }
 presence.on("UpdateData", async () => {
-  const pathName = window.location.pathname,
-    notfound = pathName == "/404" || document.querySelector(".notfound"),
-    timestampValue = await presence.getSetting(SettingsId.timestamp),
+  const pathname = window.location.pathname,
+    notfound = pathname == "/404" || document.querySelector(".notfound"),
+    timestampValue = await presence.getSetting(settings.id.timestamp),
     data: PresenceData = {
       largeImageKey: await Resource(imgKeys[0]),
       startTimestamp:
@@ -135,46 +188,52 @@ presence.on("UpdateData", async () => {
           ? Math.floor(Date.now() / 1000)
           : undefined
     };
-  if (pathName == "/" && (await presence.getSetting(SettingsId.home.this))) {
-    data.details = "Início";
-    if (await presence.getSetting(SettingsId.home.releases)) {
-      const a = document.querySelector("[class*=activedlanca]");
-      data.state = "Lançamentos: " + (a ? a.textContent : "...");
-    }
+  if (
+    pathname == "/" &&
+    (await presence.getSetting(settings.id.home.this)) &&
+    (await getStrings(settings.id.home.str)).length >= 3
+  ) {
+    const str = await getStrings(settings.id.home.str);
+    data.details = str[1];
+    if (await presence.getSetting(settings.id.home.releases))
+      data.state = settings.ph
+        .h_lancamento(str[2])
+        .replace("%ph_bruh%", str[0]);
   } else if (
-    pathName.startsWith("/lista-mangas") &&
-    (await presence.getSetting(SettingsId.mangalist.this)) &&
-    !notfound
+    pathname.startsWith("/lista-mangas") &&
+    !notfound &&
+    (await presence.getSetting(settings.id.mangalist.this)) &&
+    (await getStrings(settings.id.mangalist.str)).length >= 4
   ) {
     const genders: string[] = [],
-      gendersEnabled = await presence.getSetting(SettingsId.mangalist.gender),
-      pagiEnabled = await presence.getSetting(SettingsId.mangalist.pagination);
-    data.details = "Lista de Mangás";
-    if (pagiEnabled)
-      data.details += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
+      gendersEnabled = await presence.getSetting(settings.id.mangalist.gender),
+      pagiEnabled = await presence.getSetting(settings.id.mangalist.pagination),
+      str = await getStrings(settings.id.mangalist.str);
+    data.details = str[0];
+    if (pagiEnabled) data.details += settings.ph.pagination(str[1]);
     if (gendersEnabled) {
       document
         .querySelector("div.multiselect>div>div")
         ?.childNodes.forEach((item) => {
           genders.push(item.textContent.trim());
         });
-      data.state = genders.length > 2 ? "" : "Gêneros: ";
-      if (genders.length == 0) data.state += "Todos";
+      data.state = genders.length > 2 ? "" : str[2];
+      if (genders.length == 0) data.state += str[3];
       data.state += genders.join(", ");
     }
   } else if (
-    pathName.startsWith("/perfil/") &&
+    pathname.startsWith("/perfil/") &&
     !notfound &&
-    (await presence.getSetting(SettingsId.profile.this))
+    (await presence.getSetting(settings.id.profile.this))
   ) {
-    const username = document.querySelector("#capapl > b")?.textContent,
+    const username = getUser(),
       tab = getWoMaterialIcons(".titleboxmanga")?.textContent.trim(),
       pathEditing =
-        pathName.replace(/\/$/, "").split("/").slice(-1)[0] == "editar";
+        pathname.replace(/\/$/, "").split("/").slice(-1)[0] == "editar";
     data.details = "Visualizando Perfil:";
     if (
       !pathEditing &&
-      (await presence.getSetting(SettingsId.profile.username_and_tab))
+      (await presence.getSetting(settings.id.profile.username_and_tab))
     ) {
       data.state = username ? username : "...";
       if (document.querySelector(".allmangasperfil"))
@@ -183,55 +242,45 @@ presence.on("UpdateData", async () => {
         data.state = data.state.replace(" - Visão geral", "");
         switch (tab) {
           case "Terminei de Ler":
-            data.state += ` - Completos (${p_getStatistics("#completo")})`;
+            data.state += ` - Completos (${getStats("#completo")})`;
             break;
           case "Lendo":
-            data.state += ` - ${tab} (${p_getStatistics("#lendo")})`;
+            data.state += ` - ${tab} (${getStats("#lendo")})`;
             break;
           case "Pretende Ler":
-            data.state += ` - ${tab} (${p_getStatistics("#pretendeler")})`;
+            data.state += ` - ${tab} (${getStats("#pretendeler")})`;
             break;
           case "Dropados":
-            data.state += ` - Desistiu (${p_getStatistics("#dropado")})`;
+            data.state += ` - Desistiu (${getStats("#dropado")})`;
             break;
         }
       }
     } else if (
       pathEditing &&
-      (await presence.getSetting(SettingsId.profile.editing))
+      (await presence.getSetting(settings.id.profile.editing))
     ) {
       data.details = "Editando Perfil:";
-      if (await presence.getSetting(SettingsId.profile.username_and_tab)) {
-        const userTitle = document
-          .querySelector("head>title")
-          .textContent.match(/(?<=Perfil: )(.*)(?= -)/g);
-        if (userTitle) data.state = userTitle[0];
-        else {
-          const hrefUser = document
-            .querySelector("ul.drop_menu>a")
-            .getAttribute("href");
-          if (hrefUser) data.state = hrefUser.split("/").slice(-1)[0];
-        }
-      }
+      if (await presence.getSetting(settings.id.profile.username_and_tab))
+        data.state = getUser();
     } else if (pathEditing) delete data.details;
     if (
       data.details &&
-      !(await presence.getSetting(SettingsId.profile.username_and_tab))
+      !(await presence.getSetting(settings.id.profile.username_and_tab))
     )
       data.details = data.details.replace(/:$/, "");
   } else if (
-    pathName.startsWith("/manga/") &&
+    pathname.startsWith("/manga/") &&
     !notfound &&
-    (await presence.getSetting(SettingsId.manga.this))
+    (await presence.getSetting(settings.id.manga.this))
   ) {
     const m_name = document.querySelector(".tity>h2>b"),
       gendersQuery = document.querySelectorAll(".gencl"),
       tab = document.querySelector(".ativoman"),
       genders: string[] = [],
-      nameEnabled = await presence.getSetting(SettingsId.manga.name),
-      gendersEnabled = await presence.getSetting(SettingsId.manga.gender),
-      tabEnabled = await presence.getSetting(SettingsId.manga.tab),
-      pagiEnabled = await presence.getSetting(SettingsId.manga.pagination);
+      nameEnabled = await presence.getSetting(settings.id.manga.name),
+      gendersEnabled = await presence.getSetting(settings.id.manga.gender),
+      tabEnabled = await presence.getSetting(settings.id.manga.tab),
+      pagiEnabled = await presence.getSetting(settings.id.manga.pagination);
     data.details = nameEnabled
       ? m_name && m_name.textContent.trim()
         ? m_name.textContent.trim()
@@ -263,23 +312,23 @@ presence.on("UpdateData", async () => {
       delete data.state;
     }
   } else if (
-    pathName.startsWith("/leitor/") &&
+    pathname.startsWith("/leitor/") &&
     !notfound &&
-    (await presence.getSetting(SettingsId.reader.this))
+    (await presence.getSetting(settings.id.reader.this))
   ) {
     const overlay = getWoMaterialIcons(".bmod>h3"),
       name = document.querySelector(".f20"),
       chapter = document.querySelector(".f14c"),
       page = document.querySelector(".noselect>.backgsla"),
       pageType = document.querySelector(".bblc>select"),
-      nameEnabled = await presence.getSetting(SettingsId.reader.name),
-      chapterEnabled = await presence.getSetting(SettingsId.reader.chapter),
-      pageEnabled = await presence.getSetting(SettingsId.reader.page),
-      reportEnabled = await presence.getSetting(SettingsId.reader.report),
-      commentEnabled = await presence.getSetting(SettingsId.reader.comment),
-      titleEnabled = await presence.getSetting(SettingsId.reader.title),
-      replyEnabled = await presence.getSetting(SettingsId.reader.reply),
-      replyUEnabled = await presence.getSetting(SettingsId.reader.reply_user);
+      nameEnabled = await presence.getSetting(settings.id.reader.name),
+      chapterEnabled = await presence.getSetting(settings.id.reader.chapter),
+      pageEnabled = await presence.getSetting(settings.id.reader.page),
+      reportEnabled = await presence.getSetting(settings.id.reader.report),
+      commentEnabled = await presence.getSetting(settings.id.reader.comment),
+      titleEnabled = await presence.getSetting(settings.id.reader.title),
+      replyEnabled = await presence.getSetting(settings.id.reader.reply),
+      replyUEnabled = await presence.getSetting(settings.id.reader.reply_user);
     data.details = nameEnabled
       ? name && name.textContent.trim()
         ? name.textContent.trim()
@@ -354,17 +403,21 @@ presence.on("UpdateData", async () => {
       }`;
     }
   } else if (
-    pathName.startsWith("/scan/") &&
-    pathName != "/scan/" &&
+    pathname.startsWith("/scan/") &&
+    pathname != "/scan/" &&
     !notfound &&
-    (await presence.getSetting(SettingsId.group_scan.this))
+    (await presence.getSetting(settings.id.group_scan.this))
   ) {
     const scanName = document.querySelector(".contentscan h2"),
       scanMembers = document.querySelectorAll(".membrosscan>.memleoa").length,
-      nameEnabled = await presence.getSetting(SettingsId.group_scan.name),
-      membersEnabled = await presence.getSetting(SettingsId.group_scan.members),
-      pagiEnabled = await presence.getSetting(SettingsId.group_scan.pagination);
-    data.details = "Visualizando Grupo:";
+      nameEnabled = await presence.getSetting(settings.id.group_scan.name),
+      membersEnabled = await presence.getSetting(
+        settings.id.group_scan.members
+      ),
+      pagiEnabled = await presence.getSetting(
+        settings.id.group_scan.pagination
+      );
+    data.details = "Grupo:";
     data.state = "";
     if (nameEnabled)
       data.state =
@@ -378,7 +431,7 @@ presence.on("UpdateData", async () => {
       data.details = data.details.replace("Pág.", "Página");
     if (!data.state) data.details = data.details.replace(/:$/, "");
   }
-  if (await presence.getSetting(SettingsId.search.this)) {
+  if (await presence.getSetting(settings.id.search.this)) {
     const searchElement = "#menu>li>input";
     if (
       (document.querySelector(searchElement) &&
@@ -387,7 +440,7 @@ presence.on("UpdateData", async () => {
         document.activeElement.className == "sch hh") ||
       document.querySelector(".dactive .boxsea")
     ) {
-      if (await presence.getSetting(SettingsId.search.input)) {
+      if (await presence.getSetting(settings.id.search.input)) {
         data.details = "Pesquisando:";
         data.state =
           (document.querySelector(searchElement) as HTMLInputElement).value
@@ -402,7 +455,7 @@ presence.on("UpdateData", async () => {
       delete data.smallImageText;
     }
   } else if (
-    (await presence.getSetting(SettingsId.history.this)) &&
+    (await presence.getSetting(settings.id.history.this)) &&
     parseInt(
       document.querySelector("[class$=historicob]")?.parentElement.style.width
     ) > 0
@@ -415,7 +468,7 @@ presence.on("UpdateData", async () => {
       if (item.classList[item.classList.length - 1].includes("selecths"))
         hSession = `${item.childNodes[0].textContent} ${item.childNodes[1].textContent}`;
     });
-    data.details = "Visualizando Histórico:";
+    data.details = "Histórico:";
     data.state = `${
       hCategory
         ? `${hCategory.match(/\d+/g)[0]} ${hCategory.replace(/ \d+/g, "")}`
@@ -426,42 +479,42 @@ presence.on("UpdateData", async () => {
       getPagination(0, true)[1]
     }`;
   } else if (
-    (await presence.getSetting(SettingsId.notify.this)) &&
+    (await presence.getSetting(settings.id.notify.this)) &&
     parseInt(
       document.querySelector(`[class$="historicob 22"]`)?.parentElement.style
         .width
     ) > 0
   ) {
-    data.details = "Visualizando Notificações";
+    data.details = "Notificações";
     data.smallImageKey = await Resource(imgKeys[6]);
     delete data.state;
     delete data.smallImageText;
   }
-  if (await presence.getSetting(SettingsId.custom_)) {
-    if (isValidJSON(`{${await presence.getSetting(SettingsId.custom)}}`)) {
+  if (await presence.getSetting(settings.id.custom_)) {
+    if (isValidJSON(`{${await presence.getSetting(settings.id.custom)}}`)) {
       const jsonObj = await JSON.parse(
-        `{${await presence.getSetting(SettingsId.custom)}}`
+        `{${await presence.getSetting(settings.id.custom)}}`
       );
       for (const obj in jsonObj) {
         if (
           Array.isArray(jsonObj[obj]) &&
-          pathName.match(new RegExp(obj, "g"))
+          pathname.match(new RegExp(obj, "g"))
         ) {
           for (let item in jsonObj[obj]) {
             item = jsonObj[obj][item];
             if (item.length > 1) {
               switch (jsonObj[obj].indexOf(item)) {
                 case 0:
-                  data.details = placeholder(item);
+                  data.details = getAllPH(item);
                   break;
                 case 1:
-                  data.state = placeholder(item);
+                  data.state = getAllPH(item);
                   break;
                 case 2:
                   data.smallImageKey = await Resource(item);
                   break;
                 case 3:
-                  data.smallImageText = placeholder(item);
+                  data.smallImageText = getAllPH(item);
                   break;
                 case 4:
                   data.largeImageKey = await Resource(item);
@@ -473,16 +526,25 @@ presence.on("UpdateData", async () => {
       }
     }
   }
+  for (const item in data) {
+    console.log((data as Record<string, string | number>)[item]);
+  }
+  const ZERO_WIDTH_NON_JOINER = "\u200C";
   if (!data.details) delete data.details;
+  else if (data.details.length < 1) data.details += ZERO_WIDTH_NON_JOINER;
   if (!data.state) delete data.state;
+  else if (data.state.length < 2) data.state += ZERO_WIDTH_NON_JOINER;
   if (!data.startTimestamp) delete data.startTimestamp;
   if (!data.smallImageKey) delete data.smallImageKey;
   if (!data.smallImageText) delete data.smallImageText;
+  else if (data.smallImageText.length < 2)
+    data.smallImageText += ZERO_WIDTH_NON_JOINER;
   if (!data.largeImageKey)
     data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
   /*
   console.log(
-    `State: "${data.state}"\nDetails: "${data.details}"\ntimestamp: ${data.startTimestamp}\nsmallKey: ${data.smallImageKey}\nsmallText: "${data.smallImageText}"`
-  );*/
+    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
+  );
+  */
   presence.setActivity(data);
 });

@@ -39,7 +39,7 @@
     {
       "if": { "home": true },
       "id": "h_str",
-      "value": "aa"
+      "value": "\"...\", \"Início\", \"Lançamentos: %h_l%\""
     },
     {
       "id": "mangalist",
@@ -62,7 +62,7 @@
     {
       "if": { "mangalist": true },
       "id": "ml_str",
-      "value": "aa"
+      "value": "\"Lista de Mangás\", \" - %pagi0%/%pagi1%\", \"Gêneros: \", \"Todos\""
     },
     {
       "id": "reader",
@@ -264,8 +264,8 @@
     {
       "if": { "custom_": true },
       "id": "custom",
-      "value": "\"/404\":[\"404\",\"error\",\"!hatsune_miku\",\"\u200C☾\",\"logo\"],\"/scan/?$\":[\"🦍\"]",
-      "placeholder": "\"regex\": [\">1\", \">1\", \"SKey\", \"SText>1\",\"LKey\"]"
+      "value": "\"/404\":[\"404\",\"error\",\"!hatsune_miku\",\"☾\",\"logo\"],\"/scan/?$\":[\"🦍\"]",
+      "placeholder": "\"regex\": [\"line1\", \"line2\", \"SKey\", \"SText\",\"LKey\"]"
     },
     {
       "id": "timestamp",
