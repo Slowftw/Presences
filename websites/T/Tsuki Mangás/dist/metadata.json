@@ -20,8 +20,8 @@
   "version": "2.0.0",
   "logo": "https://tsuki.is-inside.me/DtWDS8xf.png",
   "thumbnail": "https://tsuki.is-inside.me/TTPtAsO8.png",
-  "color": "#161616",
-  "tags": ["manga", "mangá", "reading", "leitura", "tsuki"],
+  "color": "#101010",
+  "tags": ["manga", "mangas", "mangá", "mangás", "reading", "leitura", "tsuki"],
   "category": "anime",
   "settings": [
     {
@@ -121,7 +121,7 @@
     {
       "if": { "reader": true },
       "id": "r_str",
-      "value": "aa"
+      "value": "\"...\", \" - \", \"Lendo Mangá:\", \"Cap. %r_cap%\", \"Pág. %r_pag%\", \"Capítulo\", \"Página\", \"Páginas\", \" abertas\""
     },
     {
       "id": "manga",
@@ -265,14 +265,14 @@
       "if": { "custom_": true },
       "id": "custom",
       "value": "\"/404\":[\"404\",\"error\",\"!hatsune_miku\",\"☾\",\"logo\"],\"/scan/?$\":[\"🦍\"]",
-      "placeholder": "\"regex\": [\"line1\", \"line2\", \"SKey\", \"SText\",\"LKey\"]"
+      "placeholder": "\"RegExp\":[\"line1\",\"line2\",\"SKey\",\"SText\",\"LKey\"]"
     },
     {
       "id": "timestamp",
       "title": "Timestamp",
       "icon": "fas fa-clock",
       "value": 0,
-      "values": ["Constante", "Inconstante", "Nenhum"]
+      "values": ["Constante", "Inconstante", "Nenhum", "Remover"]
     }
   ]
 }

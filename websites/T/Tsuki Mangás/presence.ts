@@ -178,7 +178,7 @@ function isValidJSON(text: string): boolean {
 presence.on("UpdateData", async () => {
   const pathname = window.location.pathname,
     notfound = pathname == "/404" || document.querySelector(".notfound"),
-    timestampValue = await presence.getSetting(settings.id.timestamp),
+    timestampValue: number = await presence.getSetting(settings.id.timestamp),
     data: PresenceData = {
       largeImageKey: await Resource(imgKeys[0]),
       startTimestamp:
@@ -186,7 +186,9 @@ presence.on("UpdateData", async () => {
           ? browsingStamp
           : timestampValue == 1
           ? Math.floor(Date.now() / 1000)
-          : undefined
+          : timestampValue == 3
+          ? undefined
+          : -1
     };
   if (
     pathname == "/" &&
@@ -220,96 +222,6 @@ presence.on("UpdateData", async () => {
       data.state = genders.length > 2 ? "" : str[2];
       if (genders.length == 0) data.state += str[3];
       data.state += genders.join(", ");
-    }
-  } else if (
-    pathname.startsWith("/perfil/") &&
-    !notfound &&
-    (await presence.getSetting(settings.id.profile.this))
-  ) {
-    const username = getUser(),
-      tab = getWoMaterialIcons(".titleboxmanga")?.textContent.trim(),
-      pathEditing =
-        pathname.replace(/\/$/, "").split("/").slice(-1)[0] == "editar";
-    data.details = "Visualizando Perfil:";
-    if (
-      !pathEditing &&
-      (await presence.getSetting(settings.id.profile.username_and_tab))
-    ) {
-      data.state = username ? username : "...";
-      if (document.querySelector(".allmangasperfil"))
-        data.state += " - Visão geral";
-      if (document.querySelectorAll(".allmangasperfil").length == 1 && tab) {
-        data.state = data.state.replace(" - Visão geral", "");
-        switch (tab) {
-          case "Terminei de Ler":
-            data.state += ` - Completos (${getStats("#completo")})`;
-            break;
-          case "Lendo":
-            data.state += ` - ${tab} (${getStats("#lendo")})`;
-            break;
-          case "Pretende Ler":
-            data.state += ` - ${tab} (${getStats("#pretendeler")})`;
-            break;
-          case "Dropados":
-            data.state += ` - Desistiu (${getStats("#dropado")})`;
-            break;
-        }
-      }
-    } else if (
-      pathEditing &&
-      (await presence.getSetting(settings.id.profile.editing))
-    ) {
-      data.details = "Editando Perfil:";
-      if (await presence.getSetting(settings.id.profile.username_and_tab))
-        data.state = getUser();
-    } else if (pathEditing) delete data.details;
-    if (
-      data.details &&
-      !(await presence.getSetting(settings.id.profile.username_and_tab))
-    )
-      data.details = data.details.replace(/:$/, "");
-  } else if (
-    pathname.startsWith("/manga/") &&
-    !notfound &&
-    (await presence.getSetting(settings.id.manga.this))
-  ) {
-    const m_name = document.querySelector(".tity>h2>b"),
-      gendersQuery = document.querySelectorAll(".gencl"),
-      tab = document.querySelector(".ativoman"),
-      genders: string[] = [],
-      nameEnabled = await presence.getSetting(settings.id.manga.name),
-      gendersEnabled = await presence.getSetting(settings.id.manga.gender),
-      tabEnabled = await presence.getSetting(settings.id.manga.tab),
-      pagiEnabled = await presence.getSetting(settings.id.manga.pagination);
-    data.details = nameEnabled
-      ? m_name && m_name.textContent.trim()
-        ? m_name.textContent.trim()
-        : "..."
-      : "Visualizando Mangá:";
-    data.state = "...";
-    if (gendersEnabled && gendersQuery.length != 0) {
-      gendersQuery.forEach((item) => {
-        genders.push(item.textContent.trim());
-      });
-      data.state = genders.length > 2 ? "" : "Gêneros: ";
-      data.state += genders.join(", ");
-    }
-    data.smallImageKey = await Resource(imgKeys[2]);
-    data.smallImageText = "";
-    if (tabEnabled)
-      data.smallImageText =
-        tab && tab.textContent.trim() ? tab.textContent.trim() : "...";
-    if (pagiEnabled)
-      data.smallImageText += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
-    if (pagiEnabled && !tabEnabled)
-      data.smallImageText = data.smallImageText.replace(/^ - /, "");
-    if (nameEnabled && !gendersEnabled) {
-      data.state = data.details;
-      data.details = "Visualizando Mangá:";
-    }
-    if (!nameEnabled && !gendersEnabled) {
-      data.details = "Visualizando Mangá";
-      delete data.state;
     }
   } else if (
     pathname.startsWith("/leitor/") &&
@@ -402,6 +314,96 @@ presence.on("UpdateData", async () => {
           : "comentário..."
       }`;
     }
+  } else if (
+    pathname.startsWith("/manga/") &&
+    !notfound &&
+    (await presence.getSetting(settings.id.manga.this))
+  ) {
+    const m_name = document.querySelector(".tity>h2>b"),
+      gendersQuery = document.querySelectorAll(".gencl"),
+      tab = document.querySelector(".ativoman"),
+      genders: string[] = [],
+      nameEnabled = await presence.getSetting(settings.id.manga.name),
+      gendersEnabled = await presence.getSetting(settings.id.manga.gender),
+      tabEnabled = await presence.getSetting(settings.id.manga.tab),
+      pagiEnabled = await presence.getSetting(settings.id.manga.pagination);
+    data.details = nameEnabled
+      ? m_name && m_name.textContent.trim()
+        ? m_name.textContent.trim()
+        : "..."
+      : "Visualizando Mangá:";
+    data.state = "...";
+    if (gendersEnabled && gendersQuery.length != 0) {
+      gendersQuery.forEach((item) => {
+        genders.push(item.textContent.trim());
+      });
+      data.state = genders.length > 2 ? "" : "Gêneros: ";
+      data.state += genders.join(", ");
+    }
+    data.smallImageKey = await Resource(imgKeys[2]);
+    data.smallImageText = "";
+    if (tabEnabled)
+      data.smallImageText =
+        tab && tab.textContent.trim() ? tab.textContent.trim() : "...";
+    if (pagiEnabled)
+      data.smallImageText += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
+    if (pagiEnabled && !tabEnabled)
+      data.smallImageText = data.smallImageText.replace(/^ - /, "");
+    if (nameEnabled && !gendersEnabled) {
+      data.state = data.details;
+      data.details = "Visualizando Mangá:";
+    }
+    if (!nameEnabled && !gendersEnabled) {
+      data.details = "Visualizando Mangá";
+      delete data.state;
+    }
+  } else if (
+    pathname.startsWith("/perfil/") &&
+    !notfound &&
+    (await presence.getSetting(settings.id.profile.this))
+  ) {
+    const username = getUser(),
+      tab = getWoMaterialIcons(".titleboxmanga")?.textContent.trim(),
+      pathEditing =
+        pathname.replace(/\/$/, "").split("/").slice(-1)[0] == "editar";
+    data.details = "Visualizando Perfil:";
+    if (
+      !pathEditing &&
+      (await presence.getSetting(settings.id.profile.username_and_tab))
+    ) {
+      data.state = username ? username : "...";
+      if (document.querySelector(".allmangasperfil"))
+        data.state += " - Visão geral";
+      if (document.querySelectorAll(".allmangasperfil").length == 1 && tab) {
+        data.state = data.state.replace(" - Visão geral", "");
+        switch (tab) {
+          case "Terminei de Ler":
+            data.state += ` - Completos (${getStats("#completo")})`;
+            break;
+          case "Lendo":
+            data.state += ` - ${tab} (${getStats("#lendo")})`;
+            break;
+          case "Pretende Ler":
+            data.state += ` - ${tab} (${getStats("#pretendeler")})`;
+            break;
+          case "Dropados":
+            data.state += ` - Desistiu (${getStats("#dropado")})`;
+            break;
+        }
+      }
+    } else if (
+      pathEditing &&
+      (await presence.getSetting(settings.id.profile.editing))
+    ) {
+      data.details = "Editando Perfil:";
+      if (await presence.getSetting(settings.id.profile.username_and_tab))
+        data.state = getUser();
+    } else if (pathEditing) delete data.details;
+    if (
+      data.details &&
+      !(await presence.getSetting(settings.id.profile.username_and_tab))
+    )
+      data.details = data.details.replace(/:$/, "");
   } else if (
     pathname.startsWith("/scan/") &&
     pathname != "/scan/" &&
@@ -526,25 +528,23 @@ presence.on("UpdateData", async () => {
       }
     }
   }
-  for (const item in data) {
-    console.log((data as Record<string, string | number>)[item]);
+  const _ = data as Record<string, string | number | undefined>,
+    ZERO_WIDTH_NON_JOINER = "\u200C";
+  if ((!data.details || !data.details.trim()) && data.startTimestamp == -1)
+    presence.setActivity({ startTimestamp: browsingStamp });
+  else {
+    for (const i in data) {
+      if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
+        data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
+      else if (!_[i] || !_[i].toString().trim()) delete _[i];
+      else if (isNaN(parseInt(_[i].toString())) && _[i].toString().length < 2)
+        _[i] += ZERO_WIDTH_NON_JOINER;
+    }
+    presence.setActivity(data);
   }
-  const ZERO_WIDTH_NON_JOINER = "\u200C";
-  if (!data.details) delete data.details;
-  else if (data.details.length < 1) data.details += ZERO_WIDTH_NON_JOINER;
-  if (!data.state) delete data.state;
-  else if (data.state.length < 2) data.state += ZERO_WIDTH_NON_JOINER;
-  if (!data.startTimestamp) delete data.startTimestamp;
-  if (!data.smallImageKey) delete data.smallImageKey;
-  if (!data.smallImageText) delete data.smallImageText;
-  else if (data.smallImageText.length < 2)
-    data.smallImageText += ZERO_WIDTH_NON_JOINER;
-  if (!data.largeImageKey)
-    data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
   /*
-  console.log(
+  presence.info(
     `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
   );
   */
-  presence.setActivity(data);
 });
