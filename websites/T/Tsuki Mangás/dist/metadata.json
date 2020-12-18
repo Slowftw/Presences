@@ -39,7 +39,7 @@
     {
       "if": { "home": true },
       "id": "h_str",
-      "value": "\"...\", \"Início\", \"Lançamentos: %h_l%\""
+      "value": "\"...\", \"Início\", \"Lançamentos: %i.l%\""
     },
     {
       "id": "mangalist",
@@ -62,7 +62,7 @@
     {
       "if": { "mangalist": true },
       "id": "ml_str",
-      "value": "\"Lista de Mangás\", \" - %pagi0%/%pagi1%\", \"Gêneros: \", \"Todos\""
+      "value": "\"Lista de Mangás\", \" - %pagi.0%/%pagi.1%\", \"Gêneros: \", \"Todos\""
     },
     {
       "id": "reader",
@@ -121,7 +121,7 @@
     {
       "if": { "reader": true },
       "id": "r_str",
-      "value": "\"...\", \" - \", \"Lendo Mangá:\", \"Cap. %r_cap%\", \"Pág. %r_pag%\", \"Capítulo\", \"Página\", \"Páginas\", \" abertas\""
+      "value": "\"...\", \" - \", \"Cap. %l.cap%\", \"Pág. %l.pag%\", \"%l.titulo%\", \"Páginas\", \" abertas\", \"Lendo Mangá:\", \"Capítulo\", \"Página\""
     },
     {
       "id": "manga",
