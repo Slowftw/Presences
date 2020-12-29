@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schemas.premid.app/metadata/1.2",
+  "$schema": "https://schemas.premid.app/metadata/1.3",
   "author": {
     "name": "fror",
     "id": "515668127829458945"
@@ -21,7 +21,16 @@
   "logo": "https://tsuki.is-inside.me/DtWDS8xf.png",
   "thumbnail": "https://tsuki.is-inside.me/TTPtAsO8.png",
   "color": "#101010",
-  "tags": ["manga", "mangas", "mangá", "mangás", "reading", "leitura", "tsuki"],
+  "tags": [
+    "mangas",
+    "mangás",
+    "novels",
+    "manhwas",
+    "manhuas",
+    "reading",
+    "leitura",
+    "tsuki"
+  ],
   "category": "anime",
   "settings": [
     {
@@ -264,7 +273,7 @@
     {
       "if": { "custom_": true },
       "id": "custom",
-      "value": "\"/404\":[\"404\",\"error\",\"!hatsune_miku\",\"☾\",\"logo\"],\"/scan/?$\":[\"🦍\"]",
+      "value": "\"/404\": [\"404\", \"Ué?\", \"!hatsune_miku\", \"月\"],\"/scan/?$\":[\"🦥\"]",
       "placeholder": "\"RegExp\":[\"line1\",\"line2\",\"SKey\",\"SText\",\"LKey\"]"
     },
     {
@@ -272,7 +281,14 @@
       "title": "Timestamp",
       "icon": "fas fa-clock",
       "value": 0,
-      "values": ["Constante", "Inconstante", "Nenhum", "Remover"]
+      "values": ["Constante", "Inconstante"]
+    },
+    {
+      "id": "nodetails",
+      "title": "Sem Detalhes",
+      "icon": "fad fa-stopwatch",
+      "value": 0,
+      "values": ["HH:MM:SS", "Há X tempo", "Nenhum"]
     }
   ]
 }

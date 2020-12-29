@@ -64,14 +64,17 @@ const presence = new Presence({
       dark: "darkbackground",
       custom_: "custom_",
       custom: "custom",
-      timestamp: "timestamp"
+      timestamp: "timestamp",
+      nodetails: "nodetails"
     },
     ph: {
-      h_release: function (s: string, ph: string) {
+      h_release: function (s: string, ph?: string) {
+        if (!s.includes("%i.l%")) return s;
         const query = document.querySelector("[class*=activedlanca]");
-        return s.split("%i_l%").join(query ? query.textContent : ph);
+        return s.split("%i.l%").join(query ? query.textContent : ph);
       },
       r_title: function (s: string) {
+        if (!s.includes("%l.titulo%")) return s;
         return s
           .split("%l.titulo%")
           .join(
@@ -79,6 +82,7 @@ const presence = new Presence({
           );
       },
       r_cap: function (s: string) {
+        if (!s.includes("%l.cap%")) return s;
         return s
           .split("%l.cap%")
           .join(
@@ -87,15 +91,14 @@ const presence = new Presence({
               .childNodes[0].textContent.match(/\d+/g)[0]
           );
       },
-      r_pag: function (s: string, ph: string[]) {
+      r_pag: function (s: string, ph?: string[]) {
         const page = document.querySelector(".noselect>.backgsla"),
           pageType = document.querySelector(".bblc>select");
+        if (!page && !pageType) return s;
         return s
           .split("%l.pag%")
           .join(
-            page &&
-              page.textContent.trim() &&
-              (pageType as HTMLSelectElement).value == "false"
+            (pageType as HTMLSelectElement).value == "false"
               ? (page as HTMLSelectElement).value
               : (pageType as HTMLSelectElement).value == "true"
               ? ph[2]
@@ -137,8 +140,12 @@ function getPagination(ind: number, history?: boolean): number[] {
     max = 1,
     pagination;
   !history
-    ? (pagination = document.querySelectorAll(".coint .pagination")[ind])
-    : (pagination = document.querySelectorAll(".pjhistorico .pagination")[ind]);
+    ? (pagination = document.querySelector(".coint .pagination")
+        ? document.querySelectorAll(".coint .pagination")[ind]
+        : null)
+    : (pagination = document.querySelector(".pjhistorico .pagination")
+        ? document.querySelectorAll(".pjhistorico .pagination")[ind]
+        : null);
   if (pagination) {
     current = parseInt(pagination.querySelector(".active")?.textContent);
     if (isNaN(current)) current = 1;
@@ -198,17 +205,12 @@ function isValidJSON(text: string): boolean {
 presence.on("UpdateData", async () => {
   const pathname = window.location.pathname,
     notfound = pathname == "/404" || document.querySelector(".notfound"),
-    timestampValue: number = await presence.getSetting(settings.id.timestamp),
     data: PresenceData = {
       largeImageKey: await Resource(imgKeys[0]),
       startTimestamp:
-        timestampValue == 0
+        (await presence.getSetting(settings.id.timestamp)) == 0
           ? browsingStamp
-          : timestampValue == 1
-          ? Math.floor(Date.now() / 1000)
-          : timestampValue == 3
-          ? undefined
-          : -1
+          : Math.floor(Date.now() / 1000)
     };
   if (
     pathname == "/" &&
@@ -497,7 +499,7 @@ presence.on("UpdateData", async () => {
     delete data.state;
     delete data.smallImageText;
   }
-  if (await presence.getSetting(settings.id.custom_)) {
+  if (await presence.getSetting(settings.id.custom_))
     if (isValidJSON(`{${await presence.getSetting(settings.id.custom)}}`)) {
       const jsonObj = await JSON.parse(
         `{${await presence.getSetting(settings.id.custom)}}`
@@ -530,24 +532,28 @@ presence.on("UpdateData", async () => {
         }
       }
     }
-  }
   const _ = data as Record<string, string | number | undefined>,
     ZERO_WIDTH_NON_JOINER = "\u200C";
-  if ((!data.details || !data.details.trim()) && data.startTimestamp == -1)
-    presence.setActivity({ startTimestamp: browsingStamp });
-  else {
-    for (const i in data) {
-      if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
-        data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
-      else if (!_[i] || !_[i].toString().trim()) delete _[i];
-      else if (isNaN(parseInt(_[i].toString())) && _[i].toString().length < 2)
-        _[i] += ZERO_WIDTH_NON_JOINER;
-    }
-    presence.setActivity(data);
-  }
-  /*
+  for (const i in data)
+    if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
+      data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
+    else if (!_[i] || !_[i].toString().trim()) delete _[i];
+    else if (isNaN(parseInt(_[i].toString())) && _[i].toString().length < 2)
+      _[i] += ZERO_WIDTH_NON_JOINER;
   presence.info(
     `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
   );
-  */
+  if (!data.details || !data.details.trim())
+    switch (parseInt(await presence.getSetting(settings.id.nodetails))) {
+      case 0:
+        presence.setActivity(data);
+        break;
+      case 1:
+        presence.setActivity({ startTimestamp: browsingStamp });
+        break;
+      case 2:
+        presence.setActivity();
+        break;
+    }
+  else presence.setActivity(data);
 });
