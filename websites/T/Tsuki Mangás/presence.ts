@@ -222,7 +222,7 @@ presence.on("UpdateData", async () => {
     if (await presence.getSetting(settings.id.home.releases))
       data.state = settings.ph.h_release(str[2], str[0]);
   } else if (
-    pathname.startsWith("/lista-mangas") &&
+    pathname.startsWith("/lista-completa") &&
     !notfound &&
     (await presence.getSetting(settings.id.mangalist.this)) &&
     (await getStrings(settings.id.mangalist.str)).length >= 4
@@ -453,7 +453,7 @@ presence.on("UpdateData", async () => {
         data.details = "Pesquisando:";
         data.state =
           (document.querySelector(searchElement) as HTMLInputElement).value
-            .length > 1
+            .length > 0
             ? (document.querySelector(searchElement) as HTMLInputElement).value
             : "...";
       } else {
@@ -463,10 +463,13 @@ presence.on("UpdateData", async () => {
       data.smallImageKey = await Resource(imgKeys[2]);
       delete data.smallImageText;
     }
-  } else if (
+  }
+  if (
     (await presence.getSetting(settings.id.history.this)) &&
     parseInt(
-      document.querySelector("[class$=historicob]")?.parentElement.style.width
+      document
+        .querySelector("[class$=historicob]")
+        ?.parentElement.style.width.match(/\d+/)[0]
     ) > 0
   ) {
     const hCategory = document
@@ -490,8 +493,9 @@ presence.on("UpdateData", async () => {
   } else if (
     (await presence.getSetting(settings.id.notify.this)) &&
     parseInt(
-      document.querySelector(`[class$="historicob 22"]`)?.parentElement.style
-        .width
+      document
+        .querySelector(`[class$="historicob 22"]`)
+        ?.parentElement.style.width.match(/\d+/)[0]
     ) > 0
   ) {
     data.details = "Notificações";
@@ -532,18 +536,15 @@ presence.on("UpdateData", async () => {
         }
       }
     }
-  const _ = data as Record<string, string | number | undefined>,
+  const _ = data as Record<string, string | undefined>,
     ZERO_WIDTH_NON_JOINER = "\u200C";
   for (const i in data)
     if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
       data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
     else if (!_[i] || !_[i].toString().trim()) delete _[i];
-    else if (isNaN(parseInt(_[i].toString())) && _[i].toString().length < 2)
+    else if (isNaN(parseInt(_[i].toString())) && _[i].trim().length == 1)
       _[i] += ZERO_WIDTH_NON_JOINER;
-  presence.info(
-    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
-  );
-  if (!data.details || !data.details.trim())
+  if (!data.details || !data.details.trim() || data.details.trim().length < 2)
     switch (parseInt(await presence.getSetting(settings.id.nodetails))) {
       case 0:
         presence.setActivity(data);
@@ -556,4 +557,7 @@ presence.on("UpdateData", async () => {
         break;
     }
   else presence.setActivity(data);
+  presence.info(
+    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
+  );
 });
