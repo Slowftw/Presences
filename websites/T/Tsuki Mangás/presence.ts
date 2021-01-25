@@ -13,6 +13,7 @@ const presence = new Presence({
         this: "mangalist",
         gender: "ml_gender",
         pagination: "ml_pagi",
+        format: "ml_format",
         str: "ml_str"
       },
       reader: {
@@ -69,41 +70,51 @@ const presence = new Presence({
     },
     ph: {
       h_release: function (s: string, ph?: string) {
-        if (!s.includes("%i.l%")) return s;
         const query = document.querySelector("[class*=activedlanca]");
-        return s.split("%i.l%").join(query ? query.textContent : ph);
+        return s
+          .split("%i.l%")
+          .join(!s.includes("%i.l%") ? "" : query ? query.textContent : ph);
       },
       r_title: function (s: string) {
-        if (!s.includes("%l.titulo%")) return s;
         return s
           .split("%l.titulo%")
           .join(
-            document.querySelector(".f14c>span").textContent.replace(/^ - /, "")
+            !s.includes("%l.titulo%")
+              ? ""
+              : document
+                  .querySelector(".f14c>span")
+                  .textContent.replace(/^ - /, "")
           );
       },
       r_cap: function (s: string) {
-        if (!s.includes("%l.cap%")) return s;
         return s
           .split("%l.cap%")
           .join(
-            document
-              .querySelector(".f14c")
-              .childNodes[0].textContent.match(/\d+/g)[0]
+            !s.includes("%l.cap%")
+              ? ""
+              : document
+                  .querySelector(".f14c")
+                  .childNodes[0].textContent.match(/\d+/g)[0]
           );
       },
       r_pag: function (s: string, ph?: string[]) {
         const page = document.querySelector(".noselect>.backgsla"),
           pageType = document.querySelector(".bblc>select");
-        if (!page && !pageType) return s;
         return s
           .split("%l.pag%")
           .join(
-            (pageType as HTMLSelectElement).value == "false"
+            !page && !pageType
+              ? ""
+              : (pageType as HTMLSelectElement).value == "false"
               ? (page as HTMLSelectElement).value
               : (pageType as HTMLSelectElement).value == "true"
               ? ph[2]
               : ph[1] + ph[0]
           );
+      },
+      lc_format: function (s: string) {
+        const format = document.querySelector(".multiselect__single");
+        return s.split("%lc.f%").join(format ? format.textContent : "");
       },
       pagination: function (s: string) {
         return s
@@ -225,22 +236,25 @@ presence.on("UpdateData", async () => {
     pathname.startsWith("/lista-completa") &&
     !notfound &&
     (await presence.getSetting(settings.id.mangalist.this)) &&
-    (await getStrings(settings.id.mangalist.str)).length >= 4
+    (await getStrings(settings.id.mangalist.str)).length >= 5
   ) {
     const genders: string[] = [],
       _genders = await presence.getSetting(settings.id.mangalist.gender),
       _pagi = await presence.getSetting(settings.id.mangalist.pagination),
+      _format = await presence.getSetting(settings.id.mangalist.format),
       str = await getStrings(settings.id.mangalist.str);
-    data.details = str[0];
-    if (_pagi) data.details += settings.ph.pagination(str[1]);
+    data.details = !(document.querySelector(".multiselect__single") && _format)
+      ? str[0]
+      : settings.ph.lc_format(str[1]);
+    if (_pagi) data.details += settings.ph.pagination(str[2]);
     if (_genders) {
       document
         .querySelector("div.multiselect>div>div")
         ?.childNodes.forEach((item) => {
           genders.push(item.textContent.trim());
         });
-      data.state = genders.length > 2 ? "" : str[2];
-      if (genders.length == 0) data.state += str[3];
+      data.state = genders.length > 2 ? "" : str[3];
+      if (genders.length == 0) data.state += str[4];
       data.state += genders.join(", ");
     }
   } else if (
@@ -248,18 +262,18 @@ presence.on("UpdateData", async () => {
     !notfound &&
     (await presence.getSetting(settings.id.reader.this))
   ) {
-    const overlay = getWoMaterialIcons(".bmod>h3"),
+    const //overlay = getWoMaterialIcons(".bmod>h3"),
       name = document.querySelector(".f20"),
       chapter = document.querySelector(".f14c"),
       pageType = document.querySelector(".bblc>select"),
       _name = await presence.getSetting(settings.id.reader.name),
       _chapter = await presence.getSetting(settings.id.reader.chapter),
       _page = await presence.getSetting(settings.id.reader.page),
-      _report = await presence.getSetting(settings.id.reader.report),
-      _comment = await presence.getSetting(settings.id.reader.comment),
+      //_report = await presence.getSetting(settings.id.reader.report),
+      //_comment = await presence.getSetting(settings.id.reader.comment),
       _title = await presence.getSetting(settings.id.reader.title),
-      _reply = await presence.getSetting(settings.id.reader.reply),
-      _replyU = await presence.getSetting(settings.id.reader.reply_user),
+      //_reply = await presence.getSetting(settings.id.reader.reply),
+      //_replyU = await presence.getSetting(settings.id.reader.reply_user),
       str = await getStrings(settings.id.reader.str);
     data.details = _name
       ? name && name.textContent.trim()
@@ -294,6 +308,25 @@ presence.on("UpdateData", async () => {
       data.state = data.details;
       data.details = str[7];
     }
+    /*
+    {
+      "if": { "reader": true },
+      "id": "r_comment",
+      "title": "├─ Comentário",
+      "value": true
+    },
+    {
+      "if": { "reader": true },
+      "id": "r_reply",
+      "title": "├─ Resposta",
+      "value": true
+    },
+    {
+      "if": { "reader": true },
+      "id": "r_reply_user",
+      "title": "└─ Respondendo User",
+      "value": true
+    },
     if (
       _report &&
       overlay &&
@@ -325,7 +358,7 @@ presence.on("UpdateData", async () => {
             ).textContent
           : "comentário..."
       }`;
-    }
+    }*/
   } else if (
     pathname.startsWith("/obra/") &&
     !notfound &&
@@ -344,23 +377,21 @@ presence.on("UpdateData", async () => {
         ? m_name.textContent.trim()
         : "..."
       : "Visualizando Mangá:";
-    data.state = "...";
+    data.smallImageText = "...";
     if (_genders && gendersQuery.length != 0) {
       gendersQuery.forEach((item) => {
         genders.push(item.textContent.trim());
       });
-      data.state = genders.length > 2 ? "" : "Gêneros: ";
-      data.state += genders.join(", ");
+      data.smallImageText = genders.length > 2 ? "" : "Gêneros: ";
+      data.smallImageText += genders.join(", ");
     }
     data.smallImageKey = await Resource(imgKeys[2]);
-    data.smallImageText = "";
+    data.state = "";
     if (_tab)
-      data.smallImageText =
+      data.state =
         tab && tab.textContent.trim() ? tab.textContent.trim() : "...";
-    if (_pagi)
-      data.smallImageText += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
-    if (_pagi && !_tab)
-      data.smallImageText = data.smallImageText.replace(/^ - /, "");
+    if (_pagi) data.state += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
+    if (_pagi && !_tab) data.state = data.state.replace(/^ - /, "");
     if (_name && !_genders) {
       data.state = data.details;
       data.details = "Visualizando Mangá:";

@@ -47,7 +47,7 @@
     },
     {
       "id": "mangalist",
-      "title": "Lista de Mangás",
+      "title": "Lista Completa",
       "icon": "fas fa-book-reader",
       "value": true
     },
@@ -60,7 +60,13 @@
     {
       "if": { "mangalist": true },
       "id": "ml_pagi",
-      "title": "└─ Paginação",
+      "title": "├─ Paginação",
+      "value": true
+    },
+    {
+      "if": { "mangalist": true },
+      "id": "ml_format",
+      "title": "└─ Formato",
       "value": true
     },
     {
@@ -100,27 +106,9 @@
       "value": true
     },
     {
-      "if": { "reader": true },
-      "id": "r_comment",
-      "title": "├─ Comentário",
-      "value": true
-    },
-    {
-      "if": { "reader": true },
-      "id": "r_reply",
-      "title": "├─ Resposta",
-      "value": true
-    },
-    {
-      "if": { "reader": true },
-      "id": "r_reply_user",
-      "title": "└─ Respondendo User",
-      "value": true
-    },
-    {
       "id": "manga",
       "title": "Mangá",
-      "icon": "fas fa-address-book",
+      "icon": "fas fa-book",
       "value": true
     },
     {
@@ -150,7 +138,7 @@
     {
       "id": "profile",
       "title": "Perfil",
-      "icon": "fas fa-user-circle",
+      "icon": "fas fa-user",
       "value": true
     },
     {
@@ -168,7 +156,7 @@
     {
       "id": "group_scan",
       "title": "Grupo/Scan",
-      "icon": "fas fa-users-cog",
+      "icon": "fas fa-users",
       "value": true
     },
     {
@@ -229,7 +217,7 @@
     {
       "id": "nodetails",
       "title": "Sem Detalhes",
-      "icon": "fad fa-stopwatch",
+      "icon": "fas fa-times-circle",
       "value": 0,
       "values": ["HH:MM:SS", "Tempo", "Remover"]
     },
@@ -260,8 +248,8 @@
     {
       "if": { "strings": true },
       "id": "ml_str",
-      "title": "Lista de Mangás",
-      "value": "\"Lista de Mangás\", \" - %pagi.0%/%pagi.1%\", \"Gêneros: \", \"Todos\""
+      "title": "Lista Completa",
+      "value": "\"Lista Completa\", \"Lista de %lc.f%s\", \" - %pagi.0%/%pagi.1%\", \"Gêneros: \", \"Todos\""
     },
     {
       "if": { "strings": true },
