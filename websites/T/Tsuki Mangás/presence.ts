@@ -139,24 +139,22 @@ const presence = new Presence({
     "bell",
     "reply"
   ];
-async function Resource(ResourceSelected: string): Promise<string> {
-  let value = ResourceSelected;
-  if (value.startsWith("!")) return value.slice(1);
-  if (imgKeys.indexOf(value) < 0) return "";
-  if (await presence.getSetting(settings.id.dark)) value += "_dark";
-  return value.toLowerCase();
+async function Resource(res: string): Promise<string> {
+  if (res.startsWith("!")) return res.slice(1);
+  if (imgKeys.indexOf(res) < 0) return "";
+  if (await presence.getSetting(settings.id.dark)) res += "_dark";
+  return res.toLowerCase();
 }
 function getPagination(ind: number, history?: boolean): number[] {
   let current = 1,
-    max = 1,
-    pagination;
-  !history
-    ? (pagination = document.querySelector(".coint .pagination")
-        ? document.querySelectorAll(".coint .pagination")[ind]
-        : null)
-    : (pagination = document.querySelector(".pjhistorico .pagination")
-        ? document.querySelectorAll(".pjhistorico .pagination")[ind]
-        : null);
+    max = 1;
+  const pagination = !history
+    ? document.querySelector(".coint .pagination")
+      ? document.querySelectorAll(".coint .pagination")[ind]
+      : null
+    : document.querySelector(".pjhistorico .pagination")
+    ? document.querySelectorAll(".pjhistorico .pagination")[ind]
+    : null;
   if (pagination) {
     current = parseInt(pagination.querySelector(".active")?.textContent);
     if (isNaN(current)) current = 1;
@@ -232,6 +230,9 @@ presence.on("UpdateData", async () => {
     data.details = str[1];
     if (await presence.getSetting(settings.id.home.releases))
       data.state = settings.ph.h_release(str[2], str[0]);
+    data.buttons = [
+      { label: "teste", url: "https://discord.com/users/325046217904226306/" }
+    ];
   } else if (
     pathname.startsWith("/lista-completa") &&
     !notfound &&
@@ -382,7 +383,6 @@ presence.on("UpdateData", async () => {
       gendersQuery.forEach((item) => {
         genders.push(item.textContent.trim());
       });
-      data.smallImageText = genders.length > 2 ? "" : "Gêneros: ";
       data.smallImageText += genders.join(", ");
     }
     data.smallImageKey = await Resource(imgKeys[2]);
@@ -573,7 +573,10 @@ presence.on("UpdateData", async () => {
     if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
       data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
     else if (!_[i] || !_[i].toString().trim()) delete _[i];
-    else if (isNaN(parseInt(_[i].toString())) && _[i].trim().length == 1)
+    else if (
+      isNaN(parseInt(_[i].toString())) &&
+      _[i].toString().trim().length == 1
+    )
       _[i] += ZERO_WIDTH_NON_JOINER;
   if (!data.details || !data.details.trim() || data.details.trim().length < 2)
     switch (parseInt(await presence.getSetting(settings.id.nodetails))) {
@@ -585,10 +588,17 @@ presence.on("UpdateData", async () => {
         break;
       case 2:
         presence.setActivity();
-        break;
     }
   else presence.setActivity(data);
   presence.info(
-    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"`
+    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${
+      data.startTimestamp
+    }\nsmallKey: "${data.smallImageKey}"\nsmallText: "${
+      data.smallImageText
+    }"\nlargeKey: "${data.largeImageKey}"\nbuttons: \n${JSON.stringify(
+      data.buttons[0],
+      null,
+      2
+    )}`
   );
 });

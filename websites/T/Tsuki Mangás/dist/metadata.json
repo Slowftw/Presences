@@ -102,7 +102,7 @@
     {
       "if": { "reader": true },
       "id": "r_report",
-      "title": "├─ Reporte",
+      "title": "└─ Reporte",
       "value": true
     },
     {
