@@ -539,11 +539,11 @@ presence.on("UpdateData", async () => {
       const jsonObj = await JSON.parse(
         `{${await presence.getSetting(settings.id.custom)}}`
       );
-      for (const obj in jsonObj) {
+      for (const obj in jsonObj) 
         if (
           Array.isArray(jsonObj[obj]) &&
           pathname.match(new RegExp(obj, "g"))
-        ) {
+        ) 
           for (let item in jsonObj[obj]) {
             item = jsonObj[obj][item];
             switch (jsonObj[obj].indexOf(item)) {
@@ -564,8 +564,7 @@ presence.on("UpdateData", async () => {
                 break;
             }
           }
-        }
-      }
+      
     }
   const _ = data as Record<string, string | undefined>,
     ZERO_WIDTH_NON_JOINER = "\u200C";
