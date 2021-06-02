@@ -23,9 +23,9 @@ const presence = new Presence({
         chapter: "r_chapter",
         page: "r_page",
         report: "r_report",
-        comment: "r_comment",
+        /* comment: "r_comment",
         reply: "r_reply",
-        reply_user: "r_reply_user",
+        reply_user: "r_reply_user", */
         str: "r_str"
       },
       manga: {
@@ -189,9 +189,12 @@ async function getStrings(id: string): Promise<string[]> {
   }
   return arr;
 }
-type phType = Record<string, (s: string, ph?: string | string[]) => string>;
 function getAllPH(input: string): string {
-  for (const item in settings.ph) input = (settings.ph as phType)[item](input);
+  for (const item in settings.ph)
+    input = (settings.ph as Record<
+      string,
+      (s: string, ph?: string | string[]) => string
+    >)[item](input);
   return input;
 }
 function getStats(query: string): string {
@@ -539,11 +542,8 @@ presence.on("UpdateData", async () => {
       const jsonObj = await JSON.parse(
         `{${await presence.getSetting(settings.id.custom)}}`
       );
-      for (const obj in jsonObj) 
-        if (
-          Array.isArray(jsonObj[obj]) &&
-          pathname.match(new RegExp(obj, "g"))
-        ) 
+      for (const obj in jsonObj)
+        if (Array.isArray(jsonObj[obj]) && pathname.match(new RegExp(obj, "g")))
           for (let item in jsonObj[obj]) {
             item = jsonObj[obj][item];
             switch (jsonObj[obj].indexOf(item)) {
@@ -564,7 +564,6 @@ presence.on("UpdateData", async () => {
                 break;
             }
           }
-      
     }
   const _ = data as Record<string, string | undefined>,
     ZERO_WIDTH_NON_JOINER = "\u200C";
@@ -590,14 +589,6 @@ presence.on("UpdateData", async () => {
     }
   else presence.setActivity(data);
   presence.info(
-    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${
-      data.startTimestamp
-    }\nsmallKey: "${data.smallImageKey}"\nsmallText: "${
-      data.smallImageText
-    }"\nlargeKey: "${data.largeImageKey}"\nbuttons: \n${JSON.stringify(
-      data.buttons[0],
-      null,
-      2
-    )}`
+    `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"\nbuttons: \n${data.buttons}`
   );
 });
