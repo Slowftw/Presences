@@ -69,13 +69,13 @@ const presence = new Presence({
       nodetails: "nodetails"
     },
     ph: {
-      h_release: function (s: string, ph?: string) {
+      h_release(s: string, ph?: string) {
         const query = document.querySelector("[class*=activedlanca]");
         return s
           .split("%i.l%")
           .join(!s.includes("%i.l%") ? "" : query ? query.textContent : ph);
       },
-      r_title: function (s: string) {
+      r_title(s: string) {
         return s
           .split("%l.titulo%")
           .join(
@@ -86,7 +86,7 @@ const presence = new Presence({
                   .textContent.replace(/^ - /, "")
           );
       },
-      r_cap: function (s: string) {
+      r_cap(s: string) {
         return s
           .split("%l.cap%")
           .join(
@@ -97,7 +97,7 @@ const presence = new Presence({
                   .childNodes[0].textContent.match(/\d+/g)[0]
           );
       },
-      r_pag: function (s: string, ph?: string[]) {
+      r_pag(s: string, ph?: string[]) {
         const page = document.querySelector(".noselect>.backgsla"),
           pageType = document.querySelector(".bblc>select");
         return s
@@ -105,18 +105,18 @@ const presence = new Presence({
           .join(
             !page && !pageType
               ? ""
-              : (pageType as HTMLSelectElement).value == "false"
+              : (pageType as HTMLSelectElement).value === "false"
               ? (page as HTMLSelectElement).value
-              : (pageType as HTMLSelectElement).value == "true"
+              : (pageType as HTMLSelectElement).value === "true"
               ? ph[2]
               : ph[1] + ph[0]
           );
       },
-      lc_format: function (s: string) {
+      lc_format(s: string) {
         const format = document.querySelector(".multiselect__single");
         return s.split("%lc.f%").join(format ? format.textContent : "");
       },
-      pagination: function (s: string) {
+      pagination(s: string) {
         return s
           .split("%pagi.0%")
           .join(getPagination(0)[0].toString())
@@ -173,28 +173,30 @@ function getUser(ph: string, myUser?: boolean): string {
     query = document.querySelector("ul.drop_menu>a"),
     dom = document.querySelector("#capapl > b")?.textContent,
     pathname = /\/perfil\/(\w+)\/{0,}/g.exec(location.pathname);
-  if (myUser)
+  if (myUser) {
     return query?.hasAttribute("href")
       ? query.getAttribute("href").split("/").slice(-1)[0]
       : ph;
+  }
   return dom ? dom : title_regex ? title_regex[0] : pathname ? pathname[1] : ph;
 }
 async function getStrings(id: string): Promise<string[]> {
   let arr: string[] = [];
   try {
     arr = eval(`[${await presence.getSetting(id)}]`);
-    arr = arr.filter((i: string) => typeof i == "string");
+    arr = arr.filter((i: string) => typeof i === "string");
   } catch {
     return [];
   }
   return arr;
 }
 function getAllPH(input: string): string {
-  for (const item in settings.ph)
+  for (const item in settings.ph) {
     input = (settings.ph as Record<
       string,
       (s: string, ph?: string | string[]) => string
     >)[item](input);
+  }
   return input;
 }
 function getStats(query: string): string {
@@ -215,17 +217,17 @@ function isValidJSON(text: string): boolean {
   }
 }
 presence.on("UpdateData", async () => {
-  const pathname = window.location.pathname,
-    notfound = pathname == "/404" || document.querySelector(".notfound"),
+  const { pathname } = window.location,
+    notfound = pathname === "/404" || document.querySelector(".notfound"),
     data: PresenceData = {
       largeImageKey: await Resource(imgKeys[0]),
       startTimestamp:
-        (await presence.getSetting(settings.id.timestamp)) == 0
+        (await presence.getSetting(settings.id.timestamp)) === 0
           ? browsingStamp
           : Math.floor(Date.now() / 1000)
     };
   if (
-    pathname == "/" &&
+    pathname === "/" &&
     (await presence.getSetting(settings.id.home.this)) &&
     (await getStrings(settings.id.home.str)).length >= 3
   ) {
@@ -258,7 +260,7 @@ presence.on("UpdateData", async () => {
           genders.push(item.textContent.trim());
         });
       data.state = genders.length > 2 ? "" : str[3];
-      if (genders.length == 0) data.state += str[4];
+      if (genders.length === 0) data.state += str[4];
       data.state += genders.join(", ");
     }
   } else if (
@@ -288,21 +290,22 @@ presence.on("UpdateData", async () => {
     data.smallImageKey = await Resource(imgKeys[1]);
     if (_title && chapter && chapter.querySelector("span"))
       data.smallImageText = settings.ph.r_title(str[4]);
-    if (_chapter)
+    if (_chapter) {
       if (chapter && chapter.textContent.trim())
         data.state += settings.ph.r_cap(str[2]);
-    if (_page)
-      if (pageType)
+    }
+    if (_page) {
+      if (pageType) {
         data.state +=
           str[1] + settings.ph.r_pag(str[3], [str[0], str[1], str[6]]);
-      else data.state += str[0] + str[1];
-    else
+      } else data.state += str[0] + str[1];
+    } else
       data.state = data.state.replace(str[3].split("%l.pag%").join(""), str[8]);
     if (!_chapter && _page) {
       data.state = data.state
         .replace(new RegExp(`^${str[1]}`), "")
         .replace(str[3].split("%l.pag%").join(""), str[9]);
-      if ((pageType as HTMLSelectElement).value == "true")
+      if ((pageType as HTMLSelectElement).value === "true")
         data.state = data.state.replace(str[9], str[5]);
     }
     if (!_name && !_chapter && !_page) {
@@ -344,15 +347,15 @@ presence.on("UpdateData", async () => {
       data.smallImageText = "Reportando capítulo...";
     } else if (
       _comment &&
-      document.activeElement.nodeName == "TEXTAREA" &&
-      document.activeElement.parentElement.parentElement.className == "comentll"
+      document.activeElement.nodeName === "TEXTAREA" &&
+      document.activeElement.parentElement.parentElement.className === "comentll"
     ) {
       data.smallImageKey = await Resource(imgKeys[3]);
       data.smallImageText = "Comentando...";
     } else if (
       _reply &&
-      document.activeElement.nodeName == "INPUT" &&
-      document.activeElement.parentElement.parentElement.className == "kkl"
+      document.activeElement.nodeName === "INPUT" &&
+      document.activeElement.parentElement.parentElement.className === "kkl"
     ) {
       data.smallImageKey = await Resource(imgKeys[7]);
       data.smallImageText = `Respondendo ${
@@ -382,7 +385,7 @@ presence.on("UpdateData", async () => {
         : "..."
       : "Visualizando Mangá:";
     data.smallImageText = "...";
-    if (_genders && gendersQuery.length != 0) {
+    if (_genders && gendersQuery.length !== 0) {
       gendersQuery.forEach((item) => {
         genders.push(item.textContent.trim());
       });
@@ -390,9 +393,10 @@ presence.on("UpdateData", async () => {
     }
     data.smallImageKey = await Resource(imgKeys[2]);
     data.state = "";
-    if (_tab)
+    if (_tab) {
       data.state =
         tab && tab.textContent.trim() ? tab.textContent.trim() : "...";
+    }
     if (_pagi) data.state += ` - ${getPagination(0)[0]}/${getPagination(0)[1]}`;
     if (_pagi && !_tab) data.state = data.state.replace(/^ - /, "");
     if (_name && !_genders) {
@@ -411,7 +415,7 @@ presence.on("UpdateData", async () => {
     const username = getUser("..."),
       tab = getWoMaterialIcons(".titleboxmanga")?.textContent.trim(),
       pathEditing =
-        pathname.replace(/\/$/, "").split("/").slice(-1)[0] == "editar";
+        pathname.replace(/\/$/, "").split("/").slice(-1)[0] === "editar";
     data.details = "Visualizando Perfil:";
     if (
       !pathEditing &&
@@ -420,7 +424,7 @@ presence.on("UpdateData", async () => {
       data.state = username ? username : "...";
       if (document.querySelector(".allmangasperfil"))
         data.state += " - Visão geral";
-      if (document.querySelectorAll(".allmangasperfil").length == 1 && tab) {
+      if (document.querySelectorAll(".allmangasperfil").length === 1 && tab) {
         data.state = data.state.replace(" - Visão geral", "");
         switch (tab) {
           case "Terminei de Ler":
@@ -452,7 +456,7 @@ presence.on("UpdateData", async () => {
       data.details = data.details.replace(/:$/, "");
   } else if (
     pathname.startsWith("/scan/") &&
-    pathname != "/scan/" &&
+    pathname !== "/scan/" &&
     !notfound &&
     (await presence.getSetting(settings.id.group_scan.this))
   ) {
@@ -463,9 +467,10 @@ presence.on("UpdateData", async () => {
       _pagi = await presence.getSetting(settings.id.group_scan.pagination);
     data.details = "Grupo:";
     data.state = "";
-    if (_name)
+    if (_name) {
       data.state =
         scanName && scanName.textContent.trim() ? scanName.textContent : "...";
+    }
     if (_members && scanMembers > 0) data.state += ` - ${scanMembers} Membros`;
     if (_pagi)
       data.state += ` - Pág. ${getPagination(0)[0]}/${getPagination(0)[1]}`;
@@ -478,9 +483,9 @@ presence.on("UpdateData", async () => {
     const searchElement = "#menu>li>input";
     if (
       (document.querySelector(searchElement) &&
-        (document.activeElement.parentNode.parentNode as Element).id ==
+        (document.activeElement.parentNode.parentNode as Element).id ===
           "menu" &&
-        document.activeElement.className == "sch hh") ||
+        document.activeElement.className === "sch hh") ||
       document.querySelector(".dactive .boxsea")
     ) {
       if (await presence.getSetting(settings.id.search.input)) {
@@ -528,7 +533,7 @@ presence.on("UpdateData", async () => {
     (await presence.getSetting(settings.id.notify.this)) &&
     parseInt(
       document
-        .querySelector(`[class$="historicob 22"]`)
+        .querySelector('[class$="historicob 22"]')
         ?.parentElement.style.width.match(/\d+/)[0]
     ) > 0
   ) {
@@ -537,13 +542,16 @@ presence.on("UpdateData", async () => {
     delete data.state;
     delete data.smallImageText;
   }
-  if (await presence.getSetting(settings.id.custom_))
+  if (await presence.getSetting(settings.id.custom_)) {
     if (isValidJSON(`{${await presence.getSetting(settings.id.custom)}}`)) {
       const jsonObj = await JSON.parse(
         `{${await presence.getSetting(settings.id.custom)}}`
       );
-      for (const obj in jsonObj)
-        if (Array.isArray(jsonObj[obj]) && pathname.match(new RegExp(obj, "g")))
+      for (const obj in jsonObj) {
+        if (
+          Array.isArray(jsonObj[obj]) &&
+          pathname.match(new RegExp(obj, "g"))
+        ) {
           for (let item in jsonObj[obj]) {
             item = jsonObj[obj][item];
             switch (jsonObj[obj].indexOf(item)) {
@@ -564,19 +572,23 @@ presence.on("UpdateData", async () => {
                 break;
             }
           }
+        }
+      }
     }
+  }
   const _ = data as Record<string, string | undefined>,
     ZERO_WIDTH_NON_JOINER = "\u200C";
-  for (const i in data)
-    if (i == "largeImageKey" && (!_[i] || !_[i].toString().trim()))
+  for (const i in data) {
+    if (i === "largeImageKey" && (!_[i] || !_[i].toString().trim()))
       data.largeImageKey = (await Resource(imgKeys[0])) || imgKeys[0];
     else if (!_[i] || !_[i].toString().trim()) delete _[i];
     else if (
       isNaN(parseInt(_[i].toString())) &&
-      _[i].toString().trim().length == 1
+      _[i].toString().trim().length === 1
     )
       _[i] += ZERO_WIDTH_NON_JOINER;
-  if (!data.details || !data.details.trim() || data.details.trim().length < 2)
+  }
+  if (!data.details || !data.details.trim() || data.details.trim().length < 2) {
     switch (parseInt(await presence.getSetting(settings.id.nodetails))) {
       case 0:
         presence.setActivity(data);
@@ -587,7 +599,7 @@ presence.on("UpdateData", async () => {
       case 2:
         presence.setActivity();
     }
-  else presence.setActivity(data);
+  } else presence.setActivity(data);
   presence.info(
     `details: "${data.details}"\nstate: "${data.state}"\ntimestamp: ${data.startTimestamp}\nsmallKey: "${data.smallImageKey}"\nsmallText: "${data.smallImageText}"\nlargeKey: "${data.largeImageKey}"\nbuttons: \n${data.buttons}`
   );
