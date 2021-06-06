@@ -245,7 +245,7 @@
       "if": { "strings": true },
       "id": "h_str",
       "title": "Início",
-      "value": "\"...\", \"Início\", \"Lançamentos: %i.l%\""
+      "value": "\"Início\", \"Lançamentos: %i.l%\""
     },
     {
       "if": { "strings": true },
@@ -257,7 +257,7 @@
       "if": { "strings": true },
       "id": "r_str",
       "title": "Leitor",
-      "value": "\"...\", \" - \", \"Cap. %l.cap%\", \"Pág. %l.pag%\", \"%l.titulo%\", \"Páginas\", \" abertas\", \"Lendo Mangá:\", \"Capítulo\", \"Página\""
+      "value": "\"Cap. %l.cap%\", \"Pág. %l.pag%\", \"%l.titulo%\", \"Páginas\", \" abertas\", \"Lendo Mangá:\", \"Capítulo\", \"Página\", \" - \""
     },
     {
       "if": { "strings": true },

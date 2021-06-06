@@ -38,11 +38,11 @@ const presence = new Presence({
       },
       profile: {
         this: "profile",
-        username_and_tab: "p_username_and_tab",
+        username: "p_username_and_tab",
         editing: "p_editing",
         str: "p_str"
       },
-      group_scan: {
+      scan: {
         this: "group_scan",
         name: "gs_name",
         members: "gs_members",
@@ -69,13 +69,13 @@ const presence = new Presence({
       nodetails: "nodetails"
     },
     ph: {
-      h_release(s: string, ph?: string) {
+      hRelease(s: string) {
         const query = document.querySelector("[class*=activedlanca]");
         return s
           .split("%i.l%")
-          .join(!s.includes("%i.l%") ? "" : query ? query.textContent : ph);
+          .join(!s.includes("%i.l%") ? "" : query ? query.textContent : "...");
       },
-      r_title(s: string) {
+      rTitle(s: string) {
         return s
           .split("%l.titulo%")
           .join(
@@ -86,7 +86,7 @@ const presence = new Presence({
                   .textContent.replace(/^ - /, "")
           );
       },
-      r_cap(s: string) {
+      rCap(s: string) {
         return s
           .split("%l.cap%")
           .join(
@@ -97,7 +97,7 @@ const presence = new Presence({
                   .childNodes[0].textContent.match(/\d+/g)[0]
           );
       },
-      r_pag(s: string, ph?: string[]) {
+      rPag(s: string, ph?: string[]) {
         const page = document.querySelector(".noselect>.backgsla"),
           pageType = document.querySelector(".bblc>select");
         return s
@@ -112,7 +112,7 @@ const presence = new Presence({
               : ph[1] + ph[0]
           );
       },
-      lc_format(s: string) {
+      lcFormat(s: string) {
         const format = document.querySelector(".multiselect__single");
         return s.split("%lc.f%").join(format ? format.textContent : "");
       },
@@ -169,7 +169,7 @@ function getPagination(ind: number, history?: boolean): number[] {
   return [current, max];
 }
 function getUser(ph: string, myUser?: boolean): string {
-  const title_regex = document.title.match(/(?<=Perfil: )(.*)(?= -)/g),
+  const titleRegex = document.title.match(/(?<=Perfil: )(.*)(?= -)/g),
     query = document.querySelector("ul.drop_menu>a"),
     dom = document.querySelector("#capapl > b")?.textContent,
     pathname = /\/perfil\/(\w+)\/{0,}/g.exec(location.pathname);
@@ -178,7 +178,7 @@ function getUser(ph: string, myUser?: boolean): string {
       ? query.getAttribute("href").split("/").slice(-1)[0]
       : ph;
   }
-  return dom ? dom : title_regex ? title_regex[0] : pathname ? pathname[1] : ph;
+  return dom ? dom : titleRegex ? titleRegex[0] : pathname ? pathname[1] : ph;
 }
 async function getStrings(id: string): Promise<string[]> {
   let arr: string[] = [];
@@ -231,12 +231,12 @@ presence.on("UpdateData", async () => {
     (await presence.getSetting(settings.id.home.this)) &&
     (await getStrings(settings.id.home.str)).length >= 3
   ) {
-    const str = await getStrings(settings.id.home.str);
-    data.details = str[1];
+    const [strHome, strRelease] = await getStrings(settings.id.home.str);
+    data.details = strHome;
     if (await presence.getSetting(settings.id.home.releases))
-      data.state = settings.ph.h_release(str[2], str[0]);
+      data.state = settings.ph.hRelease(strRelease);
     data.buttons = [
-      { label: "teste", url: "https://discord.com/users/325046217904226306/" }
+      { label: "test", url: "https://discord.com/users/325046217904226306/" }
     ];
   } else if (
     pathname.startsWith("/lista-completa") &&
@@ -251,7 +251,7 @@ presence.on("UpdateData", async () => {
       str = await getStrings(settings.id.mangalist.str);
     data.details = !(document.querySelector(".multiselect__single") && _format)
       ? str[0]
-      : settings.ph.lc_format(str[1]);
+      : settings.ph.lcFormat(str[1]);
     if (_pagi) data.details += settings.ph.pagination(str[2]);
     if (_genders) {
       document
@@ -289,15 +289,15 @@ presence.on("UpdateData", async () => {
     data.state = "";
     data.smallImageKey = await Resource(imgKeys[1]);
     if (_title && chapter && chapter.querySelector("span"))
-      data.smallImageText = settings.ph.r_title(str[4]);
+      data.smallImageText = settings.ph.rTitle(str[4]);
     if (_chapter) {
       if (chapter && chapter.textContent.trim())
-        data.state += settings.ph.r_cap(str[2]);
+        data.state += settings.ph.rCap(str[2]);
     }
     if (_page) {
       if (pageType) {
         data.state +=
-          str[1] + settings.ph.r_pag(str[3], [str[0], str[1], str[6]]);
+          str[1] + settings.ph.rPag(str[3], [str[0], str[1], str[6]]);
       } else data.state += str[0] + str[1];
     } else
       data.state = data.state.replace(str[3].split("%l.pag%").join(""), str[8]);
@@ -371,7 +371,7 @@ presence.on("UpdateData", async () => {
     !notfound &&
     (await presence.getSetting(settings.id.manga.this))
   ) {
-    const m_name = document.querySelector(".tity>h2>b"),
+    const mName = document.querySelector(".tity>h2>b"),
       gendersQuery = document.querySelectorAll(".gencl"),
       tab = document.querySelector(".ativoman"),
       genders: string[] = [],
@@ -380,8 +380,8 @@ presence.on("UpdateData", async () => {
       _tab = await presence.getSetting(settings.id.manga.tab),
       _pagi = await presence.getSetting(settings.id.manga.pagination);
     data.details = _name
-      ? m_name && m_name.textContent.trim()
-        ? m_name.textContent.trim()
+      ? mName && mName.textContent.trim()
+        ? mName.textContent.trim()
         : "..."
       : "Visualizando Mangá:";
     data.smallImageText = "...";
@@ -419,7 +419,7 @@ presence.on("UpdateData", async () => {
     data.details = "Visualizando Perfil:";
     if (
       !pathEditing &&
-      (await presence.getSetting(settings.id.profile.username_and_tab))
+      (await presence.getSetting(settings.id.profile.username))
     ) {
       data.state = username ? username : "...";
       if (document.querySelector(".allmangasperfil"))
@@ -446,25 +446,25 @@ presence.on("UpdateData", async () => {
       (await presence.getSetting(settings.id.profile.editing))
     ) {
       data.details = "Editando Perfil:";
-      if (await presence.getSetting(settings.id.profile.username_and_tab))
+      if (await presence.getSetting(settings.id.profile.username))
         data.state = getUser("...");
     } else if (pathEditing) delete data.details;
     if (
       data.details &&
-      !(await presence.getSetting(settings.id.profile.username_and_tab))
+      !(await presence.getSetting(settings.id.profile.username))
     )
       data.details = data.details.replace(/:$/, "");
   } else if (
     pathname.startsWith("/scan/") &&
     pathname !== "/scan/" &&
     !notfound &&
-    (await presence.getSetting(settings.id.group_scan.this))
+    (await presence.getSetting(settings.id.scan.this))
   ) {
     const scanName = document.querySelector(".contentscan h2"),
       scanMembers = document.querySelectorAll(".membrosscan>.memleoa").length,
-      _name = await presence.getSetting(settings.id.group_scan.name),
-      _members = await presence.getSetting(settings.id.group_scan.members),
-      _pagi = await presence.getSetting(settings.id.group_scan.pagination);
+      _name = await presence.getSetting(settings.id.scan.name),
+      _members = await presence.getSetting(settings.id.scan.members),
+      _pagi = await presence.getSetting(settings.id.scan.pagination);
     data.details = "Grupo:";
     data.state = "";
     if (_name) {
